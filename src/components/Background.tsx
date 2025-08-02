@@ -1,4 +1,7 @@
-export default function Background({ darkMode }: { darkMode: boolean }) {
+import { useTheme } from "../contexts/ThemeContext";
+
+export default function Background() {
+	const { darkMode } = useTheme();
 	return (
 		<div
 			aria-label="Background"

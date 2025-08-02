@@ -7,52 +7,61 @@ import {
 } from "react";
 import { fetchData, fetchTranslations } from "../lib/sheets";
 
-export const DataContext = createContext<{
-	content: Record<string, any>;
-	supportedLangs: Record<string, string>[];
-	isLoading: boolean;
-	loadContentForLang: (langCode: string) => Promise<void>;
-} | null>(null);
+interface Content {
+	projects: Record<string, any>[];
+	certificates: Record<string, any>[];
+	translations: Record<string, Record<string, string>>;
+	supportedLangs: Record<string, any>[];
+	currentLang: string;
+}
+
+const DataContext = createContext<
+	| (Content & {
+			isLoading: boolean;
+			loadContentForLang: (langCode: string) => Promise<void>;
+	  })
+	| null
+>(null);
 
 export function DataProvider({ children }: { children: ReactNode }) {
-	const [content, setContent] = useState<Record<string, any>>({
+	const [content, setContent] = useState<Content>({
 		projects: [],
 		certificates: [],
 		translations: {},
+		supportedLangs: [],
+		currentLang: "",
 	});
-	const [supportedLangs, setSupportedLangs] = useState<
-		Record<string, string>[]
-	>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
 		const loadData = async () => {
-            try{
-                const [projects, certificates, supportedLangs] = await Promise.all([
-                    fetchData("projects"),
-                    fetchData("certificates"),
-                    fetchData("supportedLangs"),
-                ]);
-                
-                setSupportedLangs(supportedLangs);
-                setContent((prev) => ({
-                    ...prev,
-                    projects,
-                    certificates,
-                }));
-            } catch (error) {
-                console.error("Failed to load app data", error);
-            } finally {
-                setIsLoading(false);
-            }
+			try {
+				const [projects, certificates, supportedLangs] =
+					await Promise.all([
+						fetchData("projects"),
+						fetchData("certificates"),
+						fetchData("supportedLangs"),
+					]);
+
+				setContent((prev) => ({
+					...prev,
+					supportedLangs,
+					projects,
+					certificates,
+				}));
+			} catch (error) {
+				console.error("Failed to load app data", error);
+			}
 		};
-        loadData();
+		loadData();
 	}, []);
 
 	const loadContentForLang = async (langCode: string) => {
 		setIsLoading(true);
 		try {
-			const langInfo = supportedLangs.find((l) => l.code === langCode);
+			const langInfo = content.supportedLangs.find(
+				(l) => l.code === langCode,
+			);
 			if (!langInfo) throw new Error("Unsupported language");
 
 			// Fetch all data in parallel
@@ -60,6 +69,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 			setContent((prev) => ({
 				...prev,
 				translations,
+				currentLang: langCode,
 			}));
 		} catch (error) {
 			console.error("Failed to load app data", error);
@@ -69,8 +79,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 	};
 
 	const value = {
-		content,
-		supportedLangs,
+		...content,
 		isLoading,
 		loadContentForLang,
 	};

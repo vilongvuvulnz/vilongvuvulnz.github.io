@@ -1,6 +1,17 @@
-import { useState, useEffect } from "react";
+import {
+	useState,
+	useEffect,
+	createContext,
+	useContext,
+	type ReactNode,
+} from "react";
 
-export default function useTheme() {
+const ThemeContext = createContext<{
+	darkMode: boolean;
+	setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
+} | null>(null);
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
 	const [darkMode, setDarkMode] = useState<boolean>(
 		localStorage.getItem("theme") === "dark",
 	);
@@ -25,5 +36,17 @@ export default function useTheme() {
 			mediaQuery.removeEventListener("change", handleThemeChange);
 	}, []);
 
-	return { darkMode, setDarkMode };
+	return (
+		<ThemeContext.Provider value={{ darkMode, setDarkMode }}>
+			{children}
+		</ThemeContext.Provider>
+	);
+}
+
+export function useTheme() {
+	const context = useContext(ThemeContext);
+	if (!context) {
+		throw new Error("useTheme must be used within a ThemeProvider");
+	}
+	return context;
 }
