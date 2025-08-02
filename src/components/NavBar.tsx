@@ -17,7 +17,7 @@ export default function NavBar() {
 	}, []);
 
 	return (
-		<motion.nav className="fixed w-full md:w-auto px-6 py-3 bottom-0 md:bottom-10 md:rounded-xl left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-800">
+		<motion.nav className="fixed w-full md:w-auto px-6 py-3 bottom-0 md:bottom-10 md:rounded-xl left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-800 shadow-xl">
 			{isDesktop ? (
 				<DekstopNavBar currentLang={currentLang} basePath={basePath} />
 			) : (
@@ -99,7 +99,7 @@ function DekstopNavBar({
 					<Link
 						aria-label={name}
 						to={`/${currentLang}${path ? `/${path}` : ""}`}
-						className={`md:px-2 md:py-2.5 rounded flex flex-col items-center
+						className={`md:px-2 md:py-2.5 rounded flex flex-col items-center transition-all duration-300
                                 ${
 									basePath === path
 										? "bg-black dark:bg-white text-white dark:text-black"
@@ -161,8 +161,6 @@ function MobileNavBar({
 						className="flex flex-col items-center"
 					>
 						<Icon size={25} />
-
-						{/* hidden in large screens */}
 						<span className="text-sm font-bold">{name}</span>
 					</Link>
 				</motion.li>

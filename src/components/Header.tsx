@@ -8,7 +8,9 @@ import { Link, useLocation } from "react-router-dom";
 export default function Header() {
 	return (
 		<header className="w-full fixed z-100 bg-white dark:bg-zinc-800 shadow-xl flex items-center px-8 py-4 justify-between">
-			<h1 className="font-bold text-2xl">Kiuyha</h1>
+			<h1 className="font-bold text-2xl">
+				{import.meta.env.VITE_APP_NAME}
+			</h1>
 			<div className="flex items-center gap-4">
 				<LanguageSwitcher />
 				<ThemeSwitcher />

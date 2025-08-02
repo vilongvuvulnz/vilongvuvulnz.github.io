@@ -35,6 +35,9 @@ jobs:
 
             - name: Run build
               run: bun run build
+              env:
+                  VITE_APP_NAME: ${{ secrets.APP_NAME }}
+                  VITE_SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
 
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3

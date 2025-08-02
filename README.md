@@ -1,69 +1,37 @@
-# React + TypeScript + Vite
+# Portofolio Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+This is web created using Vite and React. You can test it in <a href="https://kiuyha.my.id" target="_blank">kiuyha.my.id</a>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Feautures
+- **Neobrutalist UI**. This website use neobrutalist UI.
+- **Responsive**. This website is responsive for all screen size.
+- **Google Spreadsheet Data**. You can use google spreadsheet as database. You can check the format in <a href="https://docs.google.com/spreadsheets/d/1wiHW3SE8y8a6JosDY2538XPFa5Ydysw1yUb-qNMMbN4" target="_blank">here</a>
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-	globalIgnores(["dist"]),
-	{
-		files: ["**/*.{ts,tsx}"],
-		extends: [
-			// Other configs...
-
-			// Remove tseslint.configs.recommended and replace with this
-			...tseslint.configs.recommendedTypeChecked,
-			// Alternatively, use this for stricter rules
-			...tseslint.configs.strictTypeChecked,
-			// Optionally, add this for stylistic rules
-			...tseslint.configs.stylisticTypeChecked,
-
-			// Other configs...
-		],
-		languageOptions: {
-			parserOptions: {
-				project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-				tsconfigRootDir: import.meta.dirname,
-			},
-			// other options...
-		},
-	},
-]);
+## Setup
+1. You can download this repository by click the `code` button and download zip. If you prefer using git, you can use this command
+```
+git clone https://github.com/kiuyha/kiuyha.github.io
+```
+4. Install the dependencies. You can use this command.
+```
+bun run install
+```
+5. Edit the `.env.example` file and rename it to `.env`. or just run this command
+```
+cp .env.example .env
+```
+6. Run the app. For development, you can use this command
+```
+bun run dev
+```
+for production, you can use this command
+```
+bun run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## License
+This project is released under the [MIT License](https://github.com/kiuyha/kiuyha.github.io/blob/main/LICENSE).
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default tseslint.config([
-	globalIgnores(["dist"]),
-	{
-		files: ["**/*.{ts,tsx}"],
-		extends: [
-			// Other configs...
-			// Enable lint rules for React
-			reactX.configs["recommended-typescript"],
-			// Enable lint rules for React DOM
-			reactDom.configs.recommended,
-		],
-		languageOptions: {
-			parserOptions: {
-				project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-				tsconfigRootDir: import.meta.dirname,
-			},
-			// other options...
-		},
-	},
-]);
-```
+## END
+Thank you for reading. Feel free to fork this project and modify it.
