@@ -6,6 +6,7 @@ import {
 	useContext,
 } from "react";
 import { fetchData, fetchTranslations } from "../lib/sheets";
+import { useErrorBoundary } from "react-error-boundary";
 
 interface Content {
 	projects: Record<string, any>[];
@@ -32,6 +33,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 		currentLang: "",
 	});
 	const [isLoading, setIsLoading] = useState(true);
+	const { showBoundary } = useErrorBoundary();
 
 	useEffect(() => {
 		const loadData = async () => {
@@ -49,8 +51,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
 					projects,
 					certificates,
 				}));
-			} catch (error) {
-				console.error("Failed to load app data", error);
+			} catch (erorr) {
+				console.error("Error fetching data:", erorr);
+				showBoundary(new Error("Failed to fetch data"));
 			}
 		};
 		loadData();
@@ -71,8 +74,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
 				translations,
 				currentLang: langCode,
 			}));
-		} catch (error) {
-			console.error("Failed to load app data", error);
+		} catch (erorr) {
+			console.error("Error fetching data:", erorr);
+			showBoundary(new Error("Failed to fetch data"));
 		} finally {
 			setIsLoading(false);
 		}

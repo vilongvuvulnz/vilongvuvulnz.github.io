@@ -1,18 +1,27 @@
 import { Navigate, Outlet, Route, Routes, useParams } from "react-router-dom";
 import { useData } from "./contexts/DataContext";
 import { useEffect } from "react";
+import LoadingScreen from "./components/LoadingScreen";
 import Background from "./components/Background";
 import Header from "./components/Header";
-import LoadingScreen from "./components/LoadingScreen";
 import NavBar from "./components/NavBar";
+import ErrorPage from "./pages/ErrorPage";
 
 // for route management
 export default function App() {
 	return (
 		<Routes>
 			<Route path="/" element={<InitialRedirector />} />
-			<Route path="/:lang/*" element={<LanguageLayout />}>
-				
+			<Route path="/:lang" element={<LanguageLayout />}>
+				<Route
+					path="*"
+					element={
+						<ErrorPage
+							error={new Error("Page not found")}
+							errorCode="404"
+						/>
+					}
+				/>
 			</Route>
 		</Routes>
 	);
@@ -39,7 +48,7 @@ function LanguageLayout() {
 	const { supportedLangs, loadContentForLang, isLoading } = useData();
 
 	useEffect(() => {
-		if ( lang && supportedLangs.some((l) => l.code === lang)) {
+		if (lang && supportedLangs.some((l) => l.code === lang)) {
 			loadContentForLang(lang);
 		}
 	}, [lang, supportedLangs]);

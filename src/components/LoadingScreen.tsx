@@ -1,20 +1,27 @@
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle } from "lucide-react";
+import { useState } from "react";
 
 export default function LoadingScreen() {
-    return (
-        // This div centers the content on the full screen
-        <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-zinc-900">
-            <div className="flex flex-col items-center gap-4">
-                {/* The spinning loader icon */}
-                <LoaderCircle
-                    size={48}
-                    className="animate-spin text-blue-500"
-                />
-                {/* Optional: Loading text */}
-                <p className="text-lg text-gray-500 dark:text-gray-400">
-                    Loading...
-                </p>
-            </div>
-        </div>
-    );
+	const [imgError, setImgError] = useState(false);
+
+	return (
+		<div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-zinc-900">  
+			<div className="flex flex-col items-center text-black dark:text-white">
+                {imgError ? (
+                    <LoaderCircle size={100} className="animate-spin mb-4" />
+                ) : (
+                    <img
+                        width={200}
+                        height={200}
+                        src="/elaina.webp"
+                        loading="eager"
+                        onError={() => setImgError(true)}
+                    />
+                )}
+				<p className="text-2xl font-bold">
+					Loading...
+				</p>
+			</div>
+		</div>
+	);
 }

@@ -38,6 +38,9 @@ jobs:
               env:
                   VITE_APP_NAME: ${{ secrets.APP_NAME }}
                   VITE_SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+            
+            - name: Copy index.html to 404.html for routing
+              run: cp ./dist/index.html ./dist/404.html
 
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
