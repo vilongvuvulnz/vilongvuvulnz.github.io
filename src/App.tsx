@@ -63,7 +63,7 @@ function LanguageLayout() {
 		<div className="relative min-h-screen text-black dark:text-white">
 			<Background />
 			<Header />
-			<main className="py-25 px-3 md:px-8">
+			<main className="py-25 px-3 md:px-8 md:pb-40">
 				<Outlet />
 			</main>
 			<NavBar />

@@ -1,7 +1,7 @@
 import Papa from "papaparse";
 
 const SPREADSHEET_ID = import.meta.env.VITE_SPREADSHEET_ID;
-export function fetchData(sheetName: string): Promise<Record<string, any>[]> {
+export function fetchData(sheetName: string): Promise<Record<string, string>[]> {
 	const sheetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
 	return new Promise((resolve, reject) => {
 		Papa.parse(sheetUrl, {

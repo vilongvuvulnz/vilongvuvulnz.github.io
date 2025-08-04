@@ -5,7 +5,10 @@ import { useData } from "../contexts/DataContext";
 import { useEffect, useRef, useState } from "react";
 
 export default function NavBar() {
-	const { currentLang } = useData();
+	const {
+		currentLang,
+		translations: { navbar: translations },
+	} = useData();
 	const basePath = useLocation().pathname.split("/")?.[2] || "";
 
 	const [isDesktop, setIsDekstop] = useState(window.innerWidth >= 768);
@@ -17,35 +20,43 @@ export default function NavBar() {
 	}, []);
 
 	return (
-		<motion.nav className="z-100 fixed w-full md:w-auto px-6 py-3 bottom-0 md:bottom-10 md:rounded-xl left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+		<motion.nav className="z-100 fixed w-full md:w-auto px-6 py-3 bottom-0 md:bottom-10 md:rounded-xl left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ">
 			{isDesktop ? (
-				<DekstopNavBar currentLang={currentLang} basePath={basePath} />
+				<DekstopNavBar
+					currentLang={currentLang}
+					basePath={basePath}
+					translations={translations}
+				/>
 			) : (
-				<MobileNavBar currentLang={currentLang} basePath={basePath} />
+				<MobileNavBar
+					currentLang={currentLang}
+					basePath={basePath}
+					translations={translations}
+				/>
 			)}
 		</motion.nav>
 	);
 }
 
-const MENUS = [
+const getMenus = (translations: Record<string, string>) => [
 	{
-		name: "Certifications",
+		name: translations['certifications'] || "Certifications",
 		path: "certifications",
 		Icon: FileBadge,
 	},
 	{
-		name: "Profile",
+		name: translations["profile"] || "Profile",
 		path: "",
 		Icon: User,
 	},
 	{
-		name: "Contributions",
+		name: translations["contributions"] || "Contributions",
 		path: "contributions",
 		Icon: GitBranch,
 	},
 ];
 
-const parentVariants: Variants = {
+export const parentVariants: Variants = {
 	hidden: {
 		scale: 1,
 		y: 0,
@@ -58,7 +69,7 @@ const parentVariants: Variants = {
 	},
 };
 
-const tooltipVariants: Variants = {
+export const tooltipVariants: Variants = {
 	hidden: {
 		opacity: 0,
 		y: -10,
@@ -74,13 +85,15 @@ const tooltipVariants: Variants = {
 function DekstopNavBar({
 	currentLang,
 	basePath,
+	translations,
 }: {
 	currentLang: string;
 	basePath: string;
+	translations: Record<string, string>;
 }) {
 	return (
 		<ul className="flex gap-8 items-center justify-center">
-			{MENUS.map(({ name, path, Icon }) => (
+			{getMenus(translations).map(({ name, path, Icon }) => (
 				<motion.li
 					key={name}
 					initial="hidden"
@@ -93,7 +106,9 @@ function DekstopNavBar({
 						className="px-1.5 py-1 absolute -top-12 left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-800 rounded-md border-2 border-zinc-900 dark:border-zinc-300
                             after:content-[''] after:absolute after:-bottom-1/2 after:left-1/2 after:-translate-x-1/2 after:border-8 after:border-transparent after:border-t-zinc-900 dark:after:border-t-zinc-300"
 					>
-						<span className="text-sm font-bold">{name}</span>
+						<span className="text-sm font-bold text-nowrap">
+							{name}
+						</span>
 					</motion.div>
 
 					<Link
@@ -107,7 +122,7 @@ function DekstopNavBar({
 								}
                                 `}
 					>
-						<Icon size={35} />
+						<Icon size={30} />
 					</Link>
 				</motion.li>
 			))}
@@ -118,9 +133,11 @@ function DekstopNavBar({
 function MobileNavBar({
 	currentLang,
 	basePath,
+	translations,
 }: {
 	currentLang: string;
 	basePath: string;
+	translations: Record<string, string>;
 }) {
 	const menusRef = useRef<Record<string, HTMLAnchorElement | null>>({});
 	const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
@@ -150,7 +167,7 @@ function MobileNavBar({
 	}, [basePath, menusRef]);
 	return (
 		<ul className="relative flex items-center justify-between mb-2">
-			{MENUS.map(({ name, path, Icon }) => (
+			{getMenus(translations).map(({ name, path, Icon }) => (
 				<motion.li key={name}>
 					<Link
 						ref={(el) => {

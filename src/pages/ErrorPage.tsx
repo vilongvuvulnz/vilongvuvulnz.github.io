@@ -28,7 +28,7 @@ export default function ErrorPage({
 						<Link to="/" onClick={resetErrorBoundary}>
 							<motion.span
 								className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 font-black text-lg md:text-xl py-3 md:py-5 px-4 md:px-6 border-4 md:border-8
-							border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all disabled:opacity-70 flex items-center justify-center gap-2 md:gap-3"
+							border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]  transition-all disabled:opacity-70 flex items-center justify-center gap-2 md:gap-3"
 								whileHover={{
 									x: -2,
 									y: -2,
