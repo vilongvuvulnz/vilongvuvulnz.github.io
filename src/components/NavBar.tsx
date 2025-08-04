@@ -17,7 +17,7 @@ export default function NavBar() {
 	}, []);
 
 	return (
-		<motion.nav className="fixed w-full md:w-auto px-6 py-3 bottom-0 md:bottom-10 md:rounded-xl left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-800 shadow-xl">
+		<motion.nav className="z-100 fixed w-full md:w-auto px-6 py-3 bottom-0 md:bottom-10 md:rounded-xl left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
 			{isDesktop ? (
 				<DekstopNavBar currentLang={currentLang} basePath={basePath} />
 			) : (
@@ -149,7 +149,7 @@ function MobileNavBar({
 		};
 	}, [basePath, menusRef]);
 	return (
-		<ul className="relative flex items-center justify-between">
+		<ul className="relative flex items-center justify-between mb-2">
 			{MENUS.map(({ name, path, Icon }) => (
 				<motion.li key={name}>
 					<Link

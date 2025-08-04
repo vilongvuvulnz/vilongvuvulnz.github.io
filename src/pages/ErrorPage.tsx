@@ -12,7 +12,7 @@ export default function ErrorPage({
 	errorCode?: string;
 }) {
 	return (
-		<div className="flex items-center justify-center min-h-screen bg-gray-200 dark:bg-zinc-900">
+		<div className="flex items-center justify-center min-h-screen">
 			<Background />
 			<div className="flex flex-col relative w-full h-screen text-black dark:text-white">
 				<div className="flex flex-col justify-center items-center flex-grow text-center p-8">
@@ -28,7 +28,7 @@ export default function ErrorPage({
 						<Link to="/" onClick={resetErrorBoundary}>
 							<motion.span
 								className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 font-black text-lg md:text-xl py-3 md:py-5 px-4 md:px-6 border-4 md:border-8
-							border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all disabled:opacity-70 flex items-center justify-center gap-2 md:gap-3"
+							border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all disabled:opacity-70 flex items-center justify-center gap-2 md:gap-3"
 								whileHover={{
 									x: -2,
 									y: -2,

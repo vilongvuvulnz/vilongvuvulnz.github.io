@@ -6,6 +6,7 @@ import Background from "./components/Background";
 import Header from "./components/Header";
 import NavBar from "./components/NavBar";
 import ErrorPage from "./pages/ErrorPage";
+import Profile from "./pages/Profile";
 
 // for route management
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
 		<Routes>
 			<Route path="/" element={<InitialRedirector />} />
 			<Route path="/:lang" element={<LanguageLayout />}>
+				<Route index element={<Profile />} />
 				<Route
 					path="*"
 					element={
@@ -58,10 +60,10 @@ function LanguageLayout() {
 	// if (!supportedLangs.some((l) => l.code === lang)) return <Navigate to="/" replace />;
 
 	return (
-		<div className="min-h-screen text-black dark:text-white bg-gray-200 dark:bg-zinc-900">
+		<div className="relative min-h-screen text-black dark:text-white">
 			<Background />
 			<Header />
-			<main>
+			<main className="py-25 px-3 md:px-8">
 				<Outlet />
 			</main>
 			<NavBar />

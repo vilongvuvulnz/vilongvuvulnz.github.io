@@ -5,7 +5,7 @@ export default function Background() {
 	return (
 		<div
 			aria-label="Background"
-			className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0"
+			className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none -z-50 bg-gray-200 dark:bg-zinc-900"
 		>
 			{/* Grid Pattern */}
 			<div className="absolute inset-0 opacity-20 dark:opacity-10">
