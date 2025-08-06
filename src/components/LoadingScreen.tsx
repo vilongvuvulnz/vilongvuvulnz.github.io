@@ -1,12 +1,8 @@
 import { LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useData } from "../contexts/DataContext";
 
 export default function LoadingScreen() {
 	const [imgError, setImgError] = useState(false);
-	const {
-		translations: { loading: translations },
-	} = useData();
 
 	useEffect(() => {
 		document.body.classList.add("overflow-hidden");
@@ -29,9 +25,7 @@ export default function LoadingScreen() {
 						onError={() => setImgError(true)}
 					/>
 				)}
-				<p className="text-2xl font-bold">
-					{translations?.["loading"] || "Loading"}...
-				</p>
+				<p className="text-2xl font-bold">Loading...</p>
 			</div>
 		</div>
 	);
