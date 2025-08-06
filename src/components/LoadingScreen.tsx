@@ -18,7 +18,7 @@ export default function LoadingScreen() {
 					<img
 						width={200}
 						height={200}
-						src="/elaina.avifs"
+						src="/loading_animation.avifs"
 						loading="eager"
 						decoding="async"
 						fetchPriority="high"
