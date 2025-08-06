@@ -63,7 +63,7 @@ export default function Footer() {
 
 			<div className="flex flex-col items-center">
 				<span className="font-semibold">
-					&copy; {new Date().getFullYear()} Ketut Shridhara
+					&copy; {new Date().getFullYear()} { import.meta.env.VITE_FULL_NAME || 'Ketut Shridhara'}
 				</span>
 				<span className="text-sm">
 					{footer?.["copyright"] || "All rights reserved"}
