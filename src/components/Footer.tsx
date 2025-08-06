@@ -17,6 +17,7 @@ export default function Footer() {
 					target="_blank"
 					rel="noopener noreferrer"
 					whileHover={{ scale: 0.9 }}
+					aria-label="see my github profile"
 					className="px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 				>
 					<img
@@ -36,6 +37,7 @@ export default function Footer() {
 					target="_blank"
 					rel="noopener noreferrer"
 					whileHover={{ scale: 0.9 }}
+					aria-label="see my linkedin profile"
 					className="px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 				>
 					<img
@@ -52,6 +54,7 @@ export default function Footer() {
 					target="_blank"
 					rel="noopener noreferrer"
 					whileHover={{ scale: 0.9 }}
+					aria-label="send me an email"
 					className="px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 				>
 					<Mail size={25} />
