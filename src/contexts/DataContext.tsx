@@ -10,7 +10,7 @@ import { useErrorBoundary } from "react-error-boundary";
 
 interface Content {
 	projects: Record<string, any>[];
-	certificates: Record<string, any>[];
+	certificates: Record<string, unknown>[];
 	translations: Record<string, Record<string, string>>;
 	supportedLangs: Record<string, any>[];
 	currentLang: string;

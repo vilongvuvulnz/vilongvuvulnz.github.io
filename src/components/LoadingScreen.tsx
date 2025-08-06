@@ -18,10 +18,10 @@ export default function LoadingScreen() {
 					<img
 						width={200}
 						height={200}
-						src="elaina.avifs"
+						src="/elaina.avifs"
 						loading="eager"
 						decoding="async"
-						data-nimg="1"
+						fetchPriority="high"
 						onError={() => setImgError(true)}
 					/>
 				)}

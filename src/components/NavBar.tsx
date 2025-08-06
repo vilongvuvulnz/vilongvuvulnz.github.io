@@ -20,7 +20,10 @@ export default function NavBar() {
 	}, []);
 
 	return (
-		<motion.nav className="z-100 fixed w-full md:w-auto px-6 py-3 bottom-0 md:bottom-10 md:rounded-xl left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ">
+		<motion.nav
+			className="z-100 fixed w-full md:w-auto px-6 py-3 bottom-0 md:bottom-10 md:rounded-xl left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-800 shadow-2xl md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+			border-t-2 md:border-l-2 border-zinc-900 dark:border-zinc-600"
+		>
 			{isDesktop ? (
 				<DekstopNavBar
 					currentLang={currentLang}
@@ -40,17 +43,17 @@ export default function NavBar() {
 
 const getMenus = (translations: Record<string, string>) => [
 	{
-		name: translations['certifications'] || "Certifications",
+		name: translations?.["certifications"] || "Certifications",
 		path: "certifications",
 		Icon: FileBadge,
 	},
 	{
-		name: translations["profile"] || "Profile",
+		name: translations?.["profile"] || "Profile",
 		path: "",
 		Icon: User,
 	},
 	{
-		name: translations["contributions"] || "Contributions",
+		name: translations?.["contributions"] || "Contributions",
 		path: "contributions",
 		Icon: GitBranch,
 	},
@@ -166,28 +169,30 @@ function MobileNavBar({
 		};
 	}, [basePath, menusRef]);
 	return (
-		<ul className="relative flex items-center justify-between mb-2">
-			{getMenus(translations).map(({ name, path, Icon }) => (
-				<motion.li key={name}>
-					<Link
-						ref={(el) => {
-							menusRef.current[path] = el;
-						}}
-						aria-label={name}
-						to={`/${currentLang}${path ? `/${path}` : ""}`}
-						className="flex flex-col items-center"
-					>
-						<Icon size={25} />
-						<span className="text-sm font-bold">{name}</span>
-					</Link>
-				</motion.li>
-			))}
+		<div className="relative">
+			<ul className="flex items-center justify-between mb-2">
+				{getMenus(translations).map(({ name, path, Icon }) => (
+					<motion.li key={name}>
+						<Link
+							ref={(el) => {
+								menusRef.current[path] = el;
+							}}
+							aria-label={name}
+							to={`/${currentLang}${path ? `/${path}` : ""}`}
+							className="flex flex-col items-center"
+						>
+							<Icon size={25} />
+							<span className="text-sm font-bold">{name}</span>
+						</Link>
+					</motion.li>
+				))}
 
+			</ul>
 			{/* Tab Indicator for small screens */}
 			<div
 				className="absolute -bottom-1.5 h-[0.3rem] bg-black dark:bg-white transition-all duration-300 rounded-xl"
 				style={underlineStyle}
 			/>
-		</ul>
+		</div>
 	);
 }

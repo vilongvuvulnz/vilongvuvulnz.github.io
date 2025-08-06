@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import NavBar from "./components/NavBar";
 import ErrorPage from "./pages/ErrorPage";
 import Profile from "./pages/Profile";
+import Footer from "./components/Footer";
 
 // for route management
 export default function App() {
@@ -63,10 +64,11 @@ function LanguageLayout() {
 		<div className="relative min-h-screen text-black dark:text-white">
 			<Background />
 			<Header />
-			<main className="py-25 px-3 md:px-8 md:pb-40">
+			<main className="pt-25 pb-8 px-3 md:px-8">
 				<Outlet />
 			</main>
 			<NavBar />
+			<Footer />
 		</div>
 	);
 }

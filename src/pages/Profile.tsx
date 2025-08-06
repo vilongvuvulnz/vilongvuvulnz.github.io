@@ -12,7 +12,6 @@ import {
 	Globe,
 	TerminalSquare,
 	ExternalLink,
-	Github,
 	BrainCircuit,
 } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
@@ -114,22 +113,22 @@ function ProfileCard() {
 				<img
 					alt="Profile Banner"
 					className="h-36 w-full object-cover border-2 rounded"
-					src="background.avif"
+					src="/background.avif"
 					loading="eager"
 					decoding="async"
-					data-nimg="1"
+					fetchPriority="high"
 				/>
 
 				<div className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2 border-8 border-white dark:border-zinc-900 rounded-full">
 					<img
 						loading="eager"
 						decoding="async"
-						data-nimg="1"
-						src="profile_picture.avif"
+						src="/profile_picture.avif"
 						alt="Profile Picture"
 						width={200}
 						height={200}
 						className="max-w-35 max-h-35 rounded-full border-3 dark:border-white object-cover"
+						fetchPriority="high"
 					/>
 				</div>
 			</div>
@@ -195,8 +194,8 @@ function DetailsCard() {
 	const {
 		translations: { details: translations },
 	} = useData();
-	const educationLenght = translations["education-length"]
-		? Number(translations["education-length"])
+	const educationLenght = translations?.["education-length"]
+		? Number(translations?.["education-length"])
 		: null;
 	return (
 		<motion.div
@@ -207,12 +206,12 @@ function DetailsCard() {
 			className="px-4 py-8 col-span-4 lg:col-span-3 flex flex-col gap-8 bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] "
 		>
 			<CollapsedContent
-				title={translations["about-me"] || "About Me"}
+				title={translations?.["about-me"] || "About Me"}
 				Icon={Info}
 				initialOpen
 			>
 				<p className="semibold text-justify">
-					{translations["about-me-description"] ||
+					{translations?.["about-me-description"] ||
 						`A developer specializing in Web and Data Science. I build
 					intelligent web applications and turn data into meaningful
 					insights. Based in Indonesia.`}
@@ -220,38 +219,40 @@ function DetailsCard() {
 			</CollapsedContent>
 
 			<CollapsedContent
-				title={translations["personal-info"] || "Personal Information"}
+				title={
+					translations?.["personal-info"] || "Personal Information"
+				}
 				Icon={UserSearch}
 			>
 				<div className="space-y-2">
 					<p className="semibold text-justify">
 						<strong>
-							{translations["personal-info-address"] ||
+							{translations?.["personal-info-address"] ||
 								"Address:"}
 						</strong>
-						{translations["personal-info-address-value"] ||
+						{translations?.["personal-info-address-value"] ||
 							"Surabaya, Jawa Timur, Indonesia"}
 					</p>
 					<p className="semibold text-justify">
 						<strong>
-							{translations["personal-info-email"] || "Email:"}
+							{translations?.["personal-info-email"] || "Email:"}
 						</strong>
-						{translations["personal-info-email-value"] ||
+						{translations?.["personal-info-email-value"] ||
 							"ketutshridhara@gmail.com"}
 					</p>
 					<p className="semibold text-justify">
 						<strong>
-							{translations["personal-info-birth-date"] ||
+							{translations?.["personal-info-birth-date"] ||
 								"Birth Date:"}
 						</strong>
-						{translations["personal-info-birth-date-value"] ||
+						{translations?.["personal-info-birth-date-value"] ||
 							"12 Maret 2007"}
 					</p>
 				</div>
 			</CollapsedContent>
 
 			<CollapsedContent
-				title={translations["education"] || "Education"}
+				title={translations?.["education"] || "Education"}
 				Icon={GraduationCap}
 			>
 				<div className="flex flex-col md:flex-row w-full justify-center gap-12">
@@ -311,18 +312,18 @@ function DetailsCard() {
 										{/* Text content */}
 										<div className="pl-5 md:pl-0 md:text-center md:mt-4">
 											<p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-												{translations[
+												{translations?.[
 													`education-${index}-year`
 												] || "Year"}
 											</p>
 											<div className="mt-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 rounded-lg shadow-sm min-w-[220px]">
 												<h3 className="font-bold">
-													{translations[
+													{translations?.[
 														`education-${index}-title`
 													] || "Title"}
 												</h3>
 												<p className="text-xs text-gray-500 dark:text-gray-400 uppercase mt-1">
-													{translations[
+													{translations?.[
 														`education-${index}-institution`
 													] || "Institution"}
 												</p>
@@ -395,7 +396,7 @@ function Project() {
 			>
 				<File size={25} />
 				<h1 className="font-semibold text-md">
-					{translations["projects-list"] || "Projects List"}
+					{translations?.["projects-list"] || "Projects List"}
 				</h1>
 			</motion.div>
 
@@ -408,13 +409,14 @@ function Project() {
 					exit={{ rotateX: 90 }}
 					transition={{ duration: 0.5 }}
 					whileTap={{ scale: 0.9 }}
+					aria-label="Search bar"
 					className="px-4 py-2 flex-1 flex gap-2 items-center bg-white dark:bg-zinc-900 border-2 md:border-0 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-none"
 				>
 					<Search size={25} />
 					<input
 						type="search"
 						placeholder={
-							translations["search-by-name"] || "Search by name"
+							translations?.["search-by-name"] || "Search by name"
 						}
 						className="w-full bg-transparent outline-none font-semibold"
 						value={search}
@@ -440,10 +442,11 @@ function Project() {
 							e.preventDefault();
 							setType(e.target.value);
 						}}
-						className="cursor-pointer px-2 py-2 font-semibold uppercase md:border-l-4 flex-1 h-full dark:border-zinc-600"
+						aria-label="choose type of project"
+						className="cursor-pointer px-2 py-2 font-semibold uppercase md:border-l-4 flex-1 h-full dark:border-zinc-600 outline-none"
 					>
 						<option value="">
-							{(translations["type"] || "type")
+							{(translations?.["type"] || "type")
 								.replace("_", " ")
 								.toUpperCase()}
 						</option>
@@ -461,10 +464,11 @@ function Project() {
 							e.preventDefault();
 							setTechStack(e.target.value);
 						}}
-						className="cursor-pointer px-2 py-2 font-semibold uppercase border-l-4 dark:border-zinc-600 flex-1 h-full"
+						aria-label="choose tech stack"
+						className="cursor-pointer px-2 py-2 font-semibold uppercase border-l-4 dark:border-zinc-600 flex-1 h-full outline-none"
 					>
 						<option value="">
-							{(translations["tech-stack"] || "tech stack")
+							{(translations?.["tech-stack"] || "tech stack")
 								.replace("_", " ")
 								.toUpperCase()}
 						</option>
@@ -484,6 +488,7 @@ function Project() {
 							setTechStack("");
 						}}
 						whileTap={{ scale: 0.9 }}
+						aria-label="reset filters"
 						className="cursor-pointer border-l-4 px-4 py-2 flex-1 dark:border-zinc-600"
 					>
 						<RefreshCcw size={25} />
@@ -537,14 +542,16 @@ function ProjectCard({
 		>
 			<div className="group relative flex-1">
 				<img
-					src={project?.preview || "placeholder_project.avif"}
+					src={project?.preview || "/placeholder_project.avif"}
 					alt="project"
 					width={400}
 					height={400}
 					loading="lazy"
 					decoding="async"
-					data-nimg="1"
 					className="w-full h-full object-cover"
+					onError={(e) => {
+						e.currentTarget.src = "/placeholder_project.avif";
+					}}
 				/>
 				<div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
 
@@ -612,6 +619,8 @@ function ProjectCard({
 
 				<div className="flex items-center gap-2">
 					<motion.button
+						type="button"
+						aria-label="Show details"
 						whileHover={{ scale: 0.9 }}
 						className=" cursor-pointer px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 					>
@@ -623,10 +632,17 @@ function ProjectCard({
 							href={project.github_link}
 							target="_blank"
 							rel="noopener noreferrer"
+							aria-label={`Github link for project ${project.name}`}
 							whileHover={{ scale: 0.9 }}
 							className="px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 						>
-							<Github size={15} />
+							<img
+								src="/github.svg"
+								alt="github"
+								width={15}
+								height={15}
+								className="dark:invert"
+							/>
 						</motion.a>
 					)}
 
@@ -635,6 +651,7 @@ function ProjectCard({
 							href={project.link}
 							target="_blank"
 							rel="noopener noreferrer"
+							aria-label={`External link for project ${project.name}`}
 							whileHover={{ scale: 0.9 }}
 							className="px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 						>

@@ -7,7 +7,7 @@ import { Link, useLocation } from "react-router-dom";
 
 export default function Header() {
 	return (
-		<header className="w-full fixed z-100 bg-white dark:bg-zinc-800 shadow-xl flex items-center px-8 py-4 justify-between">
+		<header className="w-full fixed z-100 bg-white dark:bg-zinc-800 shadow-2xl flex items-center px-8 py-4 justify-between border-b-2 border-zinc-900 dark:border-zinc-600">
 			<h1 className="font-bold text-2xl">
 				{import.meta.env.VITE_APP_NAME}
 			</h1>
@@ -65,10 +65,13 @@ function LanguageSwitcher() {
 						aria-orientation="vertical"
 						aria-labelledby="language-menu-button"
 					>
-						{supportedLangs.map(({ code, name}) => (
+						{supportedLangs.map(({ code, name }) => (
 							<Link
 								key={code}
-								to={currentPath.replace(`/${currentLang}`, `/${code}`)}
+								to={currentPath.replace(
+									`/${currentLang}`,
+									`/${code}`,
+								)}
 								className="w-full flex items-center justify-between gap-2 rounded-md px-3 py-2 text-sm text-gray-700 dark:text-gray-200 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700"
 								role="menuitem"
 							>
