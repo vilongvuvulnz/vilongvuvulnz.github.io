@@ -39,7 +39,10 @@ export default defineConfig({
 			output: {
 				manualChunks(id) {
 					// Group React related packages into a 'react-vendor' chunk
-					if (id.includes("react")) {
+					if (
+						id.includes("node_modules/react-dom") ||
+						id.includes("node_modules/react/")
+					) {
 						return "react-vendor";
 					}
 
