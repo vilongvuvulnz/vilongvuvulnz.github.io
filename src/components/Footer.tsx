@@ -50,7 +50,7 @@ export default function Footer() {
 				</motion.a>
 
 				<motion.a
-					href={`mailto:${details?.["personal-info-email-value"] || "ketutshridhara"}`}
+					href={`mailto:${details?.["personal-info-email-value"] || "ketutshridhara@gmail.com"}`}
 					target="_blank"
 					rel="noopener noreferrer"
 					whileHover={{ scale: 0.9 }}
