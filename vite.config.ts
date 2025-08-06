@@ -38,6 +38,14 @@ export default defineConfig({
 		rollupOptions: {
 			output: {
 				manualChunks(id) {
+					// Group React related packages into a 'react-vendor' chunk
+					if (
+						id.includes("node_modules/react-dom") ||
+						id.includes("node_modules/react/")
+					) {
+						return "react-vendor";
+					}
+
 					// Group all other node_modules into a general 'vendor' chunk
 					if (id.includes("node_modules")) {
 						return "vendor";
