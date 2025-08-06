@@ -120,7 +120,7 @@ function ProfileCard() {
 				<img
 					alt="Profile Banner"
 					className="h-36 w-full object-cover border-2 rounded"
-					src="/background.avif"
+					src="/banner_profile.avif"
 					loading="eager"
 					decoding="async"
 					fetchPriority="high"
@@ -849,16 +849,18 @@ function IframeProject({ link }: { link: projectRow["link"] }) {
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const [errorIframe, setErrorIframe] = useState(false);
 	const [limitScale, setLimitScale] = useState({
-		min: 0.5,
-		max: 1.5,
+		min: window.innerWidth >= 768 ? 0.5 : 0.3,
+		max: window.innerWidth >= 768 ? 1.5 : 0.8,
 	});
 
 	useEffect(() => {
 		// adjust according to screen size since mobile screen is smaller, so the limit will be smaller
-		const handleResize = () => setLimitScale({
+		const handleResize = () => { 
+			console.log(window.innerWidth)
+			setLimitScale({
 			min: window.innerWidth >= 768 ? 0.5 : 0.3,
 			max: window.innerWidth >= 768 ? 1.5 : 0.8
-		});
+		})};
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
