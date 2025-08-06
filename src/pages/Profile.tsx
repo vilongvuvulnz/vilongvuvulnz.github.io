@@ -848,6 +848,20 @@ function IframeProject({ link }: { link: projectRow["link"] }) {
 	const [scale, setScale] = useState(1);
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const [errorIframe, setErrorIframe] = useState(false);
+	const [limitScale, setLimitScale] = useState({
+		min: 0.5,
+		max: 1.5,
+	});
+
+	useEffect(() => {
+		// adjust according to screen size since mobile screen is smaller, so the limit will be smaller
+		const handleResize = () => setLimitScale({
+			min: window.innerWidth >= 768 ? 0.5 : 0.3,
+			max: window.innerWidth >= 768 ? 1.5 : 0.8
+		});
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
 	const handleReset = () => {
 		setScale(1);
@@ -864,11 +878,11 @@ function IframeProject({ link }: { link: projectRow["link"] }) {
 	};
 
 	const handleZoomIn = () => {
-		setScale((prev) => Math.min(1.5, prev + 0.1));
+		setScale((prev) => Math.min(limitScale.max, prev + 0.1));
 	};
 
 	const handleZoomOut = () => {
-		setScale((prev) => Math.max(0.5, prev - 0.1));
+		setScale((prev) => Math.max(limitScale.min, prev - 0.1));
 	};
 
 	return (
