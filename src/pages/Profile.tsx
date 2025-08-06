@@ -23,7 +23,7 @@ import {
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { tooltipVariants } from "../components/NavBar";
 import { useData } from "../contexts/DataContext";
-import type { projectRow } from "../types/global";
+import type { projectRow, translations } from "../types/global";
 
 export default function Profile() {
 	return (
@@ -518,6 +518,7 @@ function Projects() {
 								index={index}
 								project={project}
 								search={search}
+								translations={translations}
 							/>
 						);
 					})}
@@ -531,10 +532,12 @@ function ProjectCard({
 	index,
 	project,
 	search,
+	translations,
 }: {
 	index: number;
 	project: projectRow;
 	search: string;
+	translations: translations["projects"];
 }) {
 	const [openDetails, setOpenDetails] = useState(false);
 	const [imageLoading, setImageLoading] = useState(true);
@@ -696,6 +699,7 @@ function ProjectCard({
 					<DetailsProject
 						close={() => setOpenDetails(false)}
 						project={project}
+						translations={translations}
 					/>
 				)}
 			</AnimatePresence>
@@ -706,9 +710,11 @@ function ProjectCard({
 function DetailsProject({
 	close,
 	project,
+	translations,
 }: {
 	close: () => void;
 	project: projectRow;
+	translations: translations['projects'];
 }) {
 	const { currentLang } = useData();
 	const [isDescriptionOpen, setIsDescriptionOpen] = useState(true);
@@ -769,7 +775,7 @@ function DetailsProject({
 									className="px-4 py-2 cursor-pointer rounded-full flex items-center justify-between gap-2 w-full"
 								>
 									<h2 className="text-2xl font-bold">
-										Description
+										{translations?.["description"] || 'Description'}
 									</h2>
 
 									<ChevronDown
