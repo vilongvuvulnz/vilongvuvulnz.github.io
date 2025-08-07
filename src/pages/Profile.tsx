@@ -381,7 +381,8 @@ function Projects() {
 				canReset: true,
 				selectField: [
 					{
-						name: translations?.["type"] || "type",
+						name: "type",
+						label: translations?.["type"] || "type",
 						ariaLabel: "choose type of project",
 						options: types.map((type) => ({
 							label: type,
@@ -391,7 +392,8 @@ function Projects() {
 						value: type,
 					},
 					{
-						name: translations?.["tech-stack"] || "tech stack",
+						name: "tech_stack",
+						label: translations?.["tech-stack"] || "tech_stack",
 						ariaLabel: "choose tech stack",
 						options: techStacks.map((techStack) => ({
 							label: techStack,

@@ -13,6 +13,7 @@ interface ListCardsProps<TData extends Record<string, unknown>> {
 		canReset?: boolean;
 		selectField: {
 			name: string;
+			label: string;
 			ariaLabel?: string;
 			defaultValue?: string;
 			options: {
@@ -164,7 +165,7 @@ export default function ListCards<TData extends Record<string, unknown>>({
 									${searchConfig ? "lg:border-l-4" : ""} ${index === 1 ? "border-l-4" : ""}`}
 							>
 								<option value="">
-									{(field.defaultValue || field.name)
+									{(field.defaultValue || field.label)
 										.replace("_", " ")
 										.toUpperCase()}
 								</option>
@@ -203,7 +204,7 @@ export default function ListCards<TData extends Record<string, unknown>>({
 				))}
 			</div>
 
-			<div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-cols-3 gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				<AnimatePresence>
 					{filteredData.map((data, index) => (
 						<Card

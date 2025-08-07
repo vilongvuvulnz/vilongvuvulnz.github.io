@@ -60,7 +60,8 @@ export default function Achievements() {
 				canReset: true,
 				selectField: [
 					{
-						name: translations?.["type"] || "type",
+						name: "type",
+						label: translations?.["type"] || "type",
 						ariaLabel: "choose type of achievement",
 						options: types.map((type) => ({
 							label: type,
@@ -70,7 +71,8 @@ export default function Achievements() {
 						value: type,
 					},
 					{
-						name: translations?.["category"] || "category",
+						name: "category",
+						label: translations?.["category"] || "category",
 						ariaLabel: "choose category of achievement",
 						options: categories.map((category) => ({
 							label: category,
@@ -80,7 +82,8 @@ export default function Achievements() {
 						value: category,
 					},
 					{
-						name: translations?.["scope"] || "scope",
+						name: "scope",
+						label: translations?.["scope"] || "scope",
 						ariaLabel: "choose scope of achievement",
 						options: scopes.map((scope) => ({
 							label: scope,
@@ -90,7 +93,8 @@ export default function Achievements() {
 						value: scope,
 					},
 					{
-						name: translations?.["skill"] || "skill",
+						name: "skills",
+						label: translations?.["skill"] || "skill",
 						ariaLabel: "choose type of achievement",
 						options: skills.map((skill) => ({
 							label: skill,
