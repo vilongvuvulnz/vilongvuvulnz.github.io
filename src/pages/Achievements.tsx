@@ -144,6 +144,12 @@ export default function Achievements() {
 										<IconType size={25} />
 									</Button>
 									<Button
+										ariaLabel="category of achievement"
+										tooltip={data.category}
+									>
+										<Info size={25} />
+									</Button>
+									<Button
 										ariaLabel="scope of achievement"
 										tooltip={data.scope}
 									>
