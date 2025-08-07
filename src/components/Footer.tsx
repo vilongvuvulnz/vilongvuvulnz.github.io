@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useData } from "../contexts/DataContext";
 import { Mail } from "lucide-react";
+import Button from "./Button";
 
 export default function Footer() {
 	const {
@@ -10,15 +11,11 @@ export default function Footer() {
 	return (
 		<footer className="flex flex-col gap-6 items-center justify-center py-10 border-t-2 border-zinc-900 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-xl pb-25 md:pb-40">
 			<div className="flex items-center gap-2">
-				<motion.a
+				<Button
 					href={
 						footer?.["github-link"] || "https://github.com/kiuyha"
 					}
-					target="_blank"
-					rel="noopener noreferrer"
-					whileHover={{ scale: 0.9 }}
 					aria-label="see my github profile"
-					className="px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 				>
 					<img
 						src="/github.svg"
@@ -27,18 +24,14 @@ export default function Footer() {
 						height={25}
 						className="dark:invert"
 					/>
-				</motion.a>
+				</Button>
 
-				<motion.a
+				<Button
 					href={
 						footer?.["linkedin-link"] ||
 						"https://www.linkedin.com/in/ketut-shridhara-46bb792a5"
 					}
-					target="_blank"
-					rel="noopener noreferrer"
-					whileHover={{ scale: 0.9 }}
 					aria-label="see my linkedin profile"
-					className="px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 				>
 					<img
 						src="/linkedin.svg"
@@ -47,18 +40,14 @@ export default function Footer() {
 						height={25}
 						className="dark:invert"
 					/>
-				</motion.a>
+				</Button>
 
-				<motion.a
+				<Button
 					href={`mailto:${details?.["personal-info-email-value"] || "ketutshridhara@gmail.com"}`}
-					target="_blank"
-					rel="noopener noreferrer"
-					whileHover={{ scale: 0.9 }}
 					aria-label="send me an email"
-					className="px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 				>
 					<Mail size={25} />
-				</motion.a>
+				</Button>
 			</div>
 
 			<div className="flex flex-col items-center">

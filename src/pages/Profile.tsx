@@ -5,10 +5,8 @@ import {
 	GraduationCap,
 	Info,
 	UserSearch,
-	File,
 	RefreshCcw,
 	type LucideIcon,
-	Search,
 	Globe,
 	TerminalSquare,
 	ExternalLink,
@@ -24,6 +22,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { tooltipVariants } from "../components/NavBar";
 import { useData } from "../contexts/DataContext";
 import type { projectRow, translations } from "../types/global";
+import ListCards from "../components/ListCards";
+import Button from "../components/Button";
 
 export default function Profile() {
 	return (
@@ -363,30 +363,8 @@ function Projects() {
 		projects,
 		translations: { project: translations },
 	} = useData();
-	const [search, setSearch] = useState("");
 	const [type, setType] = useState("");
 	const [techStack, setTechStack] = useState("");
-
-	const filteredProjects = useMemo(
-		() =>
-			[...projects]
-				.filter((project) => {
-					const sameType = type === "" || project.type === type;
-					const sameTechStack =
-						techStack === "" ||
-						project.tech_stack.includes(techStack);
-					const inSearch =
-						search === "" ||
-						project.name
-							.toLowerCase()
-							.includes(search.toLowerCase());
-					return sameType && sameTechStack && inSearch;
-				})
-				// reverse the order so the most recent project is on top
-				.reverse(),
-		[projects, search, type, techStack],
-	);
-
 	const types = useMemo(() => {
 		return [...new Set(projects.map((project) => project.type))].sort();
 	}, [projects]);
@@ -396,314 +374,110 @@ function Projects() {
 			...new Set(projects.flatMap((project) => project.tech_stack)),
 		].sort();
 	}, [projects]);
-
 	return (
-		<div className="col-span-4 flex flex-col gap-4">
-			{/* Headline of the section */}
-			<motion.div
-				initial={{ rotateX: -90 }}
-				animate={{ rotateX: 0 }}
-				exit={{ rotateX: 90 }}
-				transition={{ duration: 0.5 }}
-				className="px-4 py-2 flex gap-2 items-center bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-			>
-				<File size={25} />
-				<h1 className="font-semibold text-md">
-					{translations?.["projects-list"] || "Projects List"}
-				</h1>
-			</motion.div>
-
-			<div className="flex flex-col md:flex-row gap-4 md:bg-white md:dark:bg-zinc-900 md:border-2 dark:border-zinc-600 md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-				{/* Search bar */}
-
-				<motion.div
-					initial={{ rotateX: -90 }}
-					animate={{ rotateX: 0 }}
-					exit={{ rotateX: 90 }}
-					transition={{ duration: 0.5 }}
-					whileTap={{ scale: 0.9 }}
-					aria-label="Search bar"
-					className="px-4 py-2 flex-1 flex gap-2 items-center bg-white dark:bg-zinc-900 border-2 md:border-0 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-none"
-				>
-					<Search size={25} />
-					<input
-						type="search"
-						placeholder={
-							translations?.["search-by-name"] || "Search by name"
-						}
-						className="w-full bg-transparent outline-none font-semibold"
-						value={search}
-						onChange={(e) => {
-							e.preventDefault();
-							setSearch(e.target.value);
-						}}
-					/>
-				</motion.div>
-
-				{/* Filters */}
-				<motion.div
-					initial={{ rotateX: -90 }}
-					animate={{ rotateX: 0 }}
-					exit={{ rotateX: 90 }}
-					transition={{ duration: 0.5 }}
-					className="flex gap-2 items-center bg-white dark:bg-zinc-900 border-2 md:border-0 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-none"
-				>
-					<motion.select
-						whileTap={{ scale: 0.9 }}
-						value={type}
-						onChange={(e) => {
-							e.preventDefault();
-							setType(e.target.value);
-						}}
-						aria-label="choose type of project"
-						className="cursor-pointer px-2 py-2 font-semibold uppercase md:border-l-4 flex-1 h-full dark:border-zinc-600 outline-none"
-					>
-						<option value="">
-							{(translations?.["type"] || "type")
-								.replace("_", " ")
-								.toUpperCase()}
-						</option>
-						{types.map((type, index) => (
-							<option key={index} value={type}>
-								{type.replace("_", " ").toUpperCase()}
-							</option>
-						))}
-					</motion.select>
-
-					<motion.select
-						whileTap={{ scale: 0.9 }}
-						value={techStack}
-						onChange={(e) => {
-							e.preventDefault();
-							setTechStack(e.target.value);
-						}}
-						aria-label="choose tech stack"
-						className="cursor-pointer px-2 py-2 font-semibold uppercase border-l-4 dark:border-zinc-600 flex-1 h-full outline-none"
-					>
-						<option value="">
-							{(translations?.["tech-stack"] || "tech stack")
-								.replace("_", " ")
-								.toUpperCase()}
-						</option>
-						{techStacks.map((stack, index) => (
-							<option key={index} value={stack}>
-								{stack.replace("_", " ").toUpperCase()}
-							</option>
-						))}
-					</motion.select>
-
-					{/* Reset filters */}
-					<motion.button
-						onClick={(e) => {
-							e.preventDefault();
-							setSearch("");
-							setType("");
-							setTechStack("");
-						}}
-						whileTap={{ scale: 0.9 }}
-						aria-label="reset filters"
-						className="cursor-pointer border-l-4 px-4 py-2 dark:border-zinc-600"
-					>
-						<RefreshCcw size={25} />
-					</motion.button>
-				</motion.div>
-			</div>
-
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				<AnimatePresence>
-					{filteredProjects.map((project, index) => {
-						return (
-							<ProjectCard
-								key={index}
-								index={index}
-								project={project}
-								search={search}
-								translations={translations}
-							/>
-						);
-					})}
-				</AnimatePresence>
-			</div>
-		</div>
-	);
-}
-
-function ProjectCard({
-	index,
-	project,
-	search,
-	translations,
-}: {
-	index: number;
-	project: projectRow;
-	search: string;
-	translations: translations["projects"];
-}) {
-	const [openDetails, setOpenDetails] = useState(false);
-	const [imageLoading, setImageLoading] = useState(true);
-	const highlightName = () => {
-		if (!search) return project.name;
-		const regex = new RegExp(search, "gi");
-		return project.name
-			.toLowerCase()
-			.replace(
-				regex,
-				(match: string) =>
-					`<mark class="bg-yellow-500">${match}</mark>`,
-			);
-	};
-
-	return (
-		<motion.div
-			initial={{ opacity: 0, y: 20 }}
-			whileInView={{ opacity: 1, y: 0 }}
-			viewport={{ once: true }}
-			exit={{ opacity: 0, y: -20 }}
-			transition={{ duration: 0.3, delay: index * 0.1 }}
-			className="flex flex-col bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-		>
-			<div className="group relative flex-1">
-				{/* skeleton image */}
-				{imageLoading && (
-					<div className="absolute inset-0 animate-pulse bg-zinc-600 dark:bg-zinc-800" />
-				)}
-
-				{/* Project image */}
-				<img
-					src={project.thumbnail || "/placeholder_project.avif"}
-					alt="project"
-					width={400}
-					height={250}
-					loading="lazy"
-					decoding="async"
-					className={`w-full h-full object-cover transition-opacity duration-300
-						${imageLoading ? "opacity-0" : "opacity-100"}`}
-					onError={(e) => {
-						setImageLoading(false);
-						e.currentTarget.src = "/placeholder_project.avif";
-					}}
-					onLoad={() => setImageLoading(false)}
+		<ListCards
+			title={translations?.["projects-list"] || "Projects List"}
+			dataSet={projects}
+			modal={(project, setOpenModal) => (
+				<DetailsProject
+					close={() => setOpenModal(false)}
+					project={project}
+					translations={translations}
 				/>
-
-				{/* Overlay on hover */}
-				<div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
-				<div className="absolute inset-0 flex items-center justify-center text-white text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer">
-					<h1 className="font-bold text-xl text-center uppercase">
-						{project.name}
-					</h1>
-				</div>
-			</div>
-
-			<div className="px-4 py-3 ">
-				<h1
-					className="font-bold text-xl text-center uppercase"
-					dangerouslySetInnerHTML={{ __html: highlightName() }}
-				/>
-			</div>
-
-			<div className="flex justify-between px-4 py-2 border-t-4 dark:border-zinc-600">
-				{(() => {
-					const Icon = (() => {
-						switch (project.type) {
-							case "website":
-								return Globe;
-							case "cli_tool":
-								return TerminalSquare;
-							case "ml_model":
-								return BrainCircuit;
-							default:
-								return Info;
-						}
-					})();
-
-					return (
-						<motion.button
-							initial="hidden"
-							whileHover="visible"
-							variants={{
-								hidden: {
-									scale: 1,
-									transition: { duration: 0.2 },
-								},
-								visible: {
-									scale: 0.9,
-									transition: { duration: 0.2 },
-								},
-							}}
-							className="cursor-pointer px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-						>
-							<motion.div
-								variants={tooltipVariants}
-								className="px-1.5 py-1 absolute -top-12 left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-800 rounded-md border-2 border-zinc-900 dark:border-zinc-300
-												after:content-[''] after:absolute after:-bottom-1/2 after:left-1/2 after:-translate-x-1/2 after:border-8 after:border-transparent after:border-t-zinc-900 dark:after:border-t-zinc-300"
+			)}
+			searchConfig={{
+				placeholder:
+					translations?.["search-by-name"] || "Search by name",
+				fieldSearch: "name",
+			}}
+			filterConfig={{
+				canReset: true,
+				selectField: [
+					{
+						name: "type",
+						ariaLabel: "choose type of project",
+						options: types.map((type) => ({
+							label: type.replace("_", " ").toUpperCase(),
+							value: type,
+						})),
+						setValue: setType,
+						value: type,
+					},
+					{
+						name: "tech_stack",
+						ariaLabel: "choose tech stack",
+						options: techStacks.map((techStack) => ({
+							label: techStack.replace("_", " ").toUpperCase(),
+							value: techStack,
+						})),
+						setValue: setTechStack,
+						value: techStack,
+					},
+				],
+			}}
+			cardConfig={{
+				imageField: "thumbnail",
+				placeholderImage: "/placeholder_project.avif",
+				buttons: {
+					leftButton: (data) =>
+						(() => {
+							const Icon = (() => {
+								switch (data.type) {
+									case "website":
+										return Globe;
+									case "cli_tool":
+										return TerminalSquare;
+									case "ml_model":
+										return BrainCircuit;
+									default:
+										return Info;
+								}
+							})();
+							return (
+								<Button
+									ariaLabel="type of project"
+									tooltipVariants={tooltipVariants}
+									tooltip={data.type}
+								>
+									<Icon size={25} />
+								</Button>
+							);
+						})(),
+					rightButton: (data, setOpenModal) => (
+						<>
+							<Button
+								ariaLabel="view details of project"
+								onClick={() => setOpenModal(true)}
 							>
-								<span className="text-sm font-bold text-nowrap">
-									{project.type
-										.replace("_", " ")
-										.toUpperCase()}
-								</span>
-							</motion.div>
-
-							<Icon size={25} />
-						</motion.button>
-					);
-				})()}
-
-				<div className="flex items-center gap-2">
-					<motion.button
-						type="button"
-						aria-label="Show details"
-						whileHover={{ scale: 0.9 }}
-						onClick={() => setOpenDetails(true)}
-						className=" cursor-pointer px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-					>
-						<Info size={15} />
-					</motion.button>
-
-					{project.github_link && (
-						<motion.a
-							href={project.github_link}
-							target="_blank"
-							rel="noopener noreferrer"
-							aria-label={`Github link for project ${project.name}`}
-							whileHover={{ scale: 0.9 }}
-							className="px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-						>
-							<img
-								src="/github.svg"
-								alt="github"
-								width={15}
-								height={15}
-								className="dark:invert"
-							/>
-						</motion.a>
-					)}
-
-					{project.link && (
-						<motion.a
-							href={project.link}
-							target="_blank"
-							rel="noopener noreferrer"
-							aria-label={`External link for project ${project.name}`}
-							whileHover={{ scale: 0.9 }}
-							className="px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-						>
-							<ExternalLink size={15} />
-						</motion.a>
-					)}
-				</div>
-			</div>
-
-			<AnimatePresence>
-				{openDetails && (
-					<DetailsProject
-						close={() => setOpenDetails(false)}
-						project={project}
-						translations={translations}
-					/>
-				)}
-			</AnimatePresence>
-		</motion.div>
+								<Info size={15} />
+							</Button>
+							{data.github_link && (
+								<Button
+									href={data.github_link}
+									ariaLabel={`Github link for project ${data.name}`}
+								>
+									<img
+										src="/github.svg"
+										alt="github"
+										width={15}
+										height={15}
+										className="dark:invert"
+									/>
+								</Button>
+							)}
+							{data.link && (
+								<Button
+									href={data.link}
+									ariaLabel={`External link for project ${data.name}`}
+								>
+									<ExternalLink size={15} />
+								</Button>
+							)}
+						</>
+					),
+				},
+			}}
+		/>
 	);
 }
 
@@ -714,7 +488,7 @@ function DetailsProject({
 }: {
 	close: () => void;
 	project: projectRow;
-	translations: translations['projects'];
+	translations: translations["projects"];
 }) {
 	const { currentLang } = useData();
 	const [isDescriptionOpen, setIsDescriptionOpen] = useState(true);
@@ -775,7 +549,8 @@ function DetailsProject({
 									className="px-4 py-2 cursor-pointer rounded-full flex items-center justify-between gap-2 w-full"
 								>
 									<h2 className="text-2xl font-bold">
-										{translations?.["description"] || 'Description'}
+										{translations?.["description"] ||
+											"Description"}
 									</h2>
 
 									<ChevronDown
@@ -819,16 +594,12 @@ function DetailsProject({
 								</div>
 
 								{project.link && (
-									<motion.a
+									<Button
 										href={project.link}
-										target="_blank"
-										rel="noopener noreferrer"
 										aria-label="Open the website in a new tab"
-										whileHover={{ scale: 0.9 }}
-										className=" cursor-pointer px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 									>
 										<ExternalLink size={15} />
-									</motion.a>
+									</Button>
 								)}
 							</div>
 
@@ -861,12 +632,13 @@ function IframeProject({ link }: { link: projectRow["link"] }) {
 
 	useEffect(() => {
 		// adjust according to screen size since mobile screen is smaller, so the limit will be smaller
-		const handleResize = () => { 
-			console.log(window.innerWidth)
+		const handleResize = () => {
+			console.log(window.innerWidth);
 			setLimitScale({
-			min: window.innerWidth >= 768 ? 0.5 : 0.3,
-			max: window.innerWidth >= 768 ? 1.5 : 0.8
-		})};
+				min: window.innerWidth >= 768 ? 0.5 : 0.3,
+				max: window.innerWidth >= 768 ? 1.5 : 0.8,
+			});
+		};
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
@@ -920,46 +692,38 @@ function IframeProject({ link }: { link: projectRow["link"] }) {
 
 			<div className="flex items-center justify-between gap-2 px-4 py-2 border-t-4 dark:border-zinc-600">
 				<div className="flex items-center gap-2">
-					<motion.button
+					<Button
 						type="button"
 						aria-label="Refresh the website"
-						whileHover={{ scale: 0.9 }}
 						onClick={handleReset}
-						className=" cursor-pointer px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 					>
 						<RefreshCcw size={15} />
-					</motion.button>
-					<motion.button
+					</Button>
+					<Button
 						type="button"
 						aria-label="Make the website fullscreen"
-						whileHover={{ scale: 0.9 }}
 						onClick={handleFullscreen}
-						className=" cursor-pointer px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 					>
 						<Expand size={15} />
-					</motion.button>
+					</Button>
 				</div>
 
 				<div className="flex items-center gap-2">
-					<motion.button
+					<Button
 						type="button"
 						aria-label="Zoom out the website"
-						whileHover={{ scale: 0.9 }}
 						onClick={handleZoomOut}
-						className=" cursor-pointer px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 					>
 						<ZoomOut size={15} />
-					</motion.button>
+					</Button>
 
-					<motion.button
+					<Button
 						type="button"
 						aria-label="Zoom in the website"
-						whileHover={{ scale: 0.9 }}
 						onClick={handleZoomIn}
-						className=" cursor-pointer px-3 py-2 flex items-center gap-2 bg-zinc-200 dark:bg-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 					>
 						<ZoomIn size={15} />
-					</motion.button>
+					</Button>
 				</div>
 			</div>
 		</>
@@ -1052,7 +816,8 @@ function ImagesProject({ images }: { images: projectRow["images"] }) {
 			)}
 			<div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
 				{images.map((_, index) => (
-					<button key={index} 
+					<button
+						key={index}
 						aria-label={`Go to slide ${index + 1}`}
 						onClick={() => setCurrentIndex(index)}
 						className={`cursor-pointer w-3 h-3 hover:bg-white rounded-full transition-colors duration-300
