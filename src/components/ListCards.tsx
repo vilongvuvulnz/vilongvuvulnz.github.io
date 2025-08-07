@@ -7,7 +7,7 @@ interface ListCardsProps<TData extends Record<string, unknown>> {
 	dataSet: TData[];
 	searchConfig?: {
 		placeholder: string;
-		fieldSearch: string;
+		fieldSearch: keyof TData;
 	};
 	filterConfig: {
 		canReset?: boolean;
@@ -24,8 +24,8 @@ interface ListCardsProps<TData extends Record<string, unknown>> {
 		}[];
 	};
 	cardConfig: {
-		titleField?: string;
-		imageField: string;
+		titleField?: keyof TData;
+		imageField: keyof TData;
 		placeholderImage: string;
 		buttons: {
 			leftButton?: (
@@ -52,8 +52,18 @@ export default function ListCards<TData extends Record<string, unknown>>({
 	cardConfig,
 	modal,
 }: ListCardsProps<TData>) {
-	const titleCardKey = cardConfig.titleField || searchConfig?.fieldSearch;
+	const titleCardKey = (cardConfig.titleField ||
+		searchConfig?.fieldSearch) as string | undefined;
 	const [search, setSearch] = useState("");
+	const groupedSelectFields = useMemo(() => {
+		const result = [];
+		const chunkSize = 2;
+		for (let i = 0; i < filterConfig.selectField.length; i += chunkSize) {
+			result.push(filterConfig.selectField.slice(i, i + chunkSize));
+		}
+		return result;
+	}, [filterConfig.selectField]);
+
 	const filteredData = useMemo(
 		() =>
 			dataSet
@@ -101,7 +111,9 @@ export default function ListCards<TData extends Record<string, unknown>>({
 				<h1 className="font-semibold text-md">{title}</h1>
 			</motion.div>
 
-			<div className="flex flex-col md:flex-row gap-4 md:bg-white md:dark:bg-zinc-900 md:border-2 dark:border-zinc-600 md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+			<div
+				className={`flex flex-col gap-2 ${searchConfig ? "lg:flex-row lg:bg-white lg:dark:bg-zinc-900 lg:border-2 dark:border-zinc-600 lg:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" : ""}`}
+			>
 				{/* Search bar */}
 				{searchConfig && (
 					<motion.div
@@ -109,9 +121,9 @@ export default function ListCards<TData extends Record<string, unknown>>({
 						animate={{ rotateX: 0 }}
 						exit={{ rotateX: 90 }}
 						transition={{ duration: 0.5 }}
-						whileTap={{ scale: 0.9 }}
+						whileTap={{ scale: 0.95 }}
 						aria-label="Search bar"
-						className="px-4 py-2 flex-1 flex gap-2 items-center bg-white dark:bg-zinc-900 border-2 md:border-0 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-none"
+						className="px-4 py-2 flex-1 flex gap-2 items-center bg-white dark:bg-zinc-900 border-2 lg:border-0 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] lg:shadow-none"
 					>
 						<Search size={25} />
 						<input
@@ -128,63 +140,71 @@ export default function ListCards<TData extends Record<string, unknown>>({
 				)}
 
 				{/* Filters */}
-				<motion.div
-					initial={{ rotateX: -90 }}
-					animate={{ rotateX: 0 }}
-					exit={{ rotateX: 90 }}
-					transition={{ duration: 0.5 }}
-					className="flex gap-2 items-center bg-white dark:bg-zinc-900 border-2 md:border-0 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-none"
-				>
-					{filterConfig.selectField.map((field, index) => (
-						<motion.select
-							key={field.name + index}
-							whileTap={{ scale: 0.9 }}
-							value={field.value}
-							onChange={(e) => {
-								e.preventDefault();
-								field.setValue(e.target.value);
-							}}
-							aria-label={field.ariaLabel}
-							className="cursor-pointer px-2 py-2 font-semibold uppercase md:border-l-4 flex-1 h-full dark:border-zinc-600 outline-none"
-						>
-							<option value="">
-								{(field.defaultValue || field.name)
-									.replace("_", " ")
-									.toUpperCase()}
-							</option>
-
-							{field.options.map((option, index) => (
-								<option key={index} value={option.value}>
-									{option.label
+				{groupedSelectFields.map((group, groupIndex) => (
+					<motion.div
+						key={groupIndex}
+						initial={{ rotateX: -90 }}
+						animate={{ rotateX: 0 }}
+						exit={{ rotateX: 90 }}
+						transition={{ duration: 0.5 }}
+						className={`flex gap-2 items-center bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+							${searchConfig ? "lg:border-0 lg:shadow-none" : ""}`}
+					>
+						{group.map((field, index) => (
+							<motion.select
+								key={field.name + index}
+								whileTap={{ scale: 0.95 }}
+								value={field.value}
+								onChange={(e) => {
+									e.preventDefault();
+									field.setValue(e.target.value);
+								}}
+								aria-label={field.ariaLabel}
+								className={`min-w-0 flex-1 text-sm lg:text-base truncate cursor-pointer px-2 py-2 font-semibold uppercase h-full dark:border-zinc-600 outline-none
+									${searchConfig ? "lg:border-l-4" : ""} ${index === 1 ? "border-l-4" : ""}`}
+							>
+								<option value="">
+									{(field.defaultValue || field.name)
 										.replace("_", " ")
 										.toUpperCase()}
 								</option>
-							))}
-						</motion.select>
-					))}
 
-					{/* Reset filters */}
-					{filterConfig.canReset && (
-						<motion.button
-							onClick={(e) => {
-								e.preventDefault();
-								filterConfig.selectField.forEach((field) => {
-									field.setValue("");
-								});
-								setSearch("");
-							}}
-							whileTap={{ scale: 0.9 }}
-							aria-label="reset filters"
-							className="cursor-pointer border-l-4 px-4 py-2 dark:border-zinc-600"
-						>
-							<RefreshCcw size={25} />
-						</motion.button>
-					)}
-				</motion.div>
+								{field.options.map((option, index) => (
+									<option key={index} value={option.value}>
+										{option.label
+											.replace("_", " ")
+											.toUpperCase()}
+									</option>
+								))}
+							</motion.select>
+						))}
+
+						{/* Reset filters */}
+						{filterConfig.canReset &&
+							groupIndex === groupedSelectFields.length - 1 && (
+								<motion.button
+									onClick={(e) => {
+										e.preventDefault();
+										filterConfig.selectField.forEach(
+											(field) => {
+												field.setValue("");
+											},
+										);
+										setSearch("");
+									}}
+									whileHover={{ scale: 0.9 }}
+									aria-label="reset filters"
+									className="cursor-pointer border-l-4 px-4 py-2 dark:border-zinc-600"
+								>
+									<RefreshCcw size={25} />
+								</motion.button>
+							)}
+					</motion.div>
+				))}
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				<AnimatePresence mode="wait">
+			<div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-cols-3 gap-4">
+				<AnimatePresence>
 					{filteredData.map((data, index) => (
 						<Card
 							key={
@@ -197,7 +217,7 @@ export default function ListCards<TData extends Record<string, unknown>>({
 							modal={modal}
 							search={search}
 							cardConfig={cardConfig}
-                            titleCardKey={titleCardKey}
+							titleCardKey={titleCardKey}
 						/>
 					))}
 				</AnimatePresence>
@@ -212,7 +232,7 @@ interface CardProps<T extends Record<string, unknown>> {
 	modal?: ListCardsProps<T>["modal"];
 	search: string;
 	cardConfig: ListCardsProps<T>["cardConfig"];
-	titleCardKey: string|undefined;
+	titleCardKey: string | undefined;
 }
 
 function Card<T extends Record<string, unknown>>({
@@ -244,7 +264,7 @@ function Card<T extends Record<string, unknown>>({
 			whileInView={{ opacity: 1, y: 0 }}
 			viewport={{ once: true }}
 			exit={{ opacity: 0, y: -20 }}
-			transition={{ duration: 0.3, delay: index * 0.1 }}
+			transition={{ duration: 0.2, delay: index * 0.08 }}
 			className="flex flex-col bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 		>
 			<div
@@ -290,7 +310,7 @@ function Card<T extends Record<string, unknown>>({
 			</div>
 
 			{titleCardKey && (data?.[titleCardKey] as string) && (
-				<div className="px-4 py-3 ">
+				<div className="px-4 py-3 border-t-4 border-zinc-900 dark:border-zinc-600">
 					<h1
 						className="font-bold text-xl text-center uppercase"
 						dangerouslySetInnerHTML={{
@@ -302,15 +322,20 @@ function Card<T extends Record<string, unknown>>({
 				</div>
 			)}
 
-			<div className="flex justify-between px-4 py-2 border-t-4 dark:border-zinc-600">
-				{cardConfig.buttons.leftButton &&
-					cardConfig.buttons.leftButton(data, setOpenModal)}
+			{(cardConfig.buttons.leftButton ||
+				cardConfig.buttons.rightButton) && (
+				<div className="flex justify-between px-4 py-2 border-t-4 dark:border-zinc-600">
+					<div className="flex items-center gap-2">
+						{cardConfig.buttons.leftButton &&
+							cardConfig.buttons.leftButton(data, setOpenModal)}
+					</div>
 
-				<div className="flex items-center gap-2">
-					{cardConfig.buttons.rightButton &&
-						cardConfig.buttons.rightButton(data, setOpenModal)}
+					<div className="flex items-center gap-2">
+						{cardConfig.buttons.rightButton &&
+							cardConfig.buttons.rightButton(data, setOpenModal)}
+					</div>
 				</div>
-			</div>
+			)}
 
 			<AnimatePresence>
 				{openModal && modal && modal(data, setOpenModal)}

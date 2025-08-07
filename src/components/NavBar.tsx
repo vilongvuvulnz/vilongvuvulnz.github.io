@@ -43,8 +43,8 @@ export default function NavBar() {
 
 const getMenus = (translations: Record<string, string>) => [
 	{
-		name: translations?.["certifications"] || "Certifications",
-		path: "certifications",
+		name: translations?.["achievements"] || "Achievements",
+		path: "achievements",
 		Icon: FileBadge,
 	},
 	{

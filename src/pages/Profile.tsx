@@ -5,25 +5,19 @@ import {
 	GraduationCap,
 	Info,
 	UserSearch,
-	RefreshCcw,
 	type LucideIcon,
 	Globe,
 	TerminalSquare,
 	ExternalLink,
 	BrainCircuit,
-	X,
-	Expand,
-	ZoomIn,
-	ZoomOut,
-	ChevronLeft,
-	ChevronRight,
 } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { tooltipVariants } from "../components/NavBar";
+import React, { useEffect, useMemo, useState } from "react";
 import { useData } from "../contexts/DataContext";
-import type { projectRow, translations } from "../types/global";
 import ListCards from "../components/ListCards";
 import Button from "../components/Button";
+import ImagesSlider from "../components/ImagesSlider";
+import DetailsModal from "../components/DetailsModal";
+import { IframeMedia } from "../components/IframeMedia";
 
 export default function Profile() {
 	return (
@@ -378,36 +372,29 @@ function Projects() {
 		<ListCards
 			title={translations?.["projects-list"] || "Projects List"}
 			dataSet={projects}
-			modal={(project, setOpenModal) => (
-				<DetailsProject
-					close={() => setOpenModal(false)}
-					project={project}
-					translations={translations}
-				/>
-			)}
 			searchConfig={{
 				placeholder:
-					translations?.["search-by-name"] || "Search by name",
+					translations?.["search-placeholder"] || "Search by name",
 				fieldSearch: "name",
 			}}
 			filterConfig={{
 				canReset: true,
 				selectField: [
 					{
-						name: "type",
+						name: translations?.["type"] || "type",
 						ariaLabel: "choose type of project",
 						options: types.map((type) => ({
-							label: type.replace("_", " ").toUpperCase(),
+							label: type,
 							value: type,
 						})),
 						setValue: setType,
 						value: type,
 					},
 					{
-						name: "tech_stack",
+						name: translations?.["tech-stack"] || "tech stack",
 						ariaLabel: "choose tech stack",
 						options: techStacks.map((techStack) => ({
-							label: techStack.replace("_", " ").toUpperCase(),
+							label: techStack,
 							value: techStack,
 						})),
 						setValue: setTechStack,
@@ -436,7 +423,6 @@ function Projects() {
 							return (
 								<Button
 									ariaLabel="type of project"
-									tooltipVariants={tooltipVariants}
 									tooltip={data.type}
 								>
 									<Icon size={25} />
@@ -477,355 +463,27 @@ function Projects() {
 					),
 				},
 			}}
+			modal={(project, setOpenModal) => (
+				<DetailsModal
+					close={() => setOpenModal(false)}
+					data={project}
+					translations={translations}
+					descriptionField="description"
+					titleField="name"
+					tagsField="tech_stack"
+					externalLinkField="link"
+					mediaPanel={
+						project.type === "website" ? (
+							<IframeMedia link={project.link} />
+						) : (
+							<ImagesSlider
+								images={[project.thumbnail, ...project.images]}
+								placeholderImage="/placeholder_project.avif"
+							/>
+						)
+					}
+				/>
+			)}
 		/>
-	);
-}
-
-function DetailsProject({
-	close,
-	project,
-	translations,
-}: {
-	close: () => void;
-	project: projectRow;
-	translations: translations["projects"];
-}) {
-	const { currentLang } = useData();
-	const [isDescriptionOpen, setIsDescriptionOpen] = useState(true);
-
-	return (
-		<motion.div
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
-			transition={{ duration: 0.5 }}
-			className="inset-0 z-200 fixed flex items-center justify-center bg-black/50 backdrop-blur-sm"
-		>
-			<motion.div
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				exit={{ opacity: 0, y: 20 }}
-				transition={{ duration: 0.5, delay: 0.2 }}
-				className="h-full w-full bg-white dark:bg-zinc-900 overflow-auto"
-			>
-				<div className="p-4 flex items-center justify-between bg-white dark:bg-zinc-900 border-b-4 dark:border-zinc-600">
-					<h1 className="font-bold text-lg uppercase">
-						{project.name}
-					</h1>
-
-					<button
-						type="button"
-						aria-label="Close details"
-						className="cursor-pointer"
-						onClick={close}
-					>
-						<X size={26} />
-					</button>
-				</div>
-
-				<div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-					<div className="flex flex-col border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-						{project.name && (
-							<div className="flex flex-wrap items-center gap-2 px-4 py-2 border-b-2 dark:border-zinc-600">
-								{project.tech_stack.map((tech: string) => (
-									<span
-										key={tech}
-										className="text-sm font-semibold px-3 py-1 rounded-full border-2 border-dashed dark:border-white bg-zinc-100 dark:bg-zinc-800"
-									>
-										{tech.trim()}
-									</span>
-								))}
-							</div>
-						)}
-
-						{project?.[`description_${currentLang}`] && (
-							<div className="flex flex-col flex-1">
-								<button
-									type="button"
-									aria-label="Toggle collapsed content"
-									onClick={() =>
-										setIsDescriptionOpen((prev) => !prev)
-									}
-									className="px-4 py-2 cursor-pointer rounded-full flex items-center justify-between gap-2 w-full"
-								>
-									<h2 className="text-2xl font-bold">
-										{translations?.["description"] ||
-											"Description"}
-									</h2>
-
-									<ChevronDown
-										size={20}
-										className={`${
-											isDescriptionOpen
-												? "rotate-180"
-												: ""
-										} transition-transform duration-300 ease-in-out`}
-									/>
-								</button>
-
-								<AnimatePresence>
-									{isDescriptionOpen && (
-										<motion.span
-											initial={{ opacity: 0, y: 10 }}
-											animate={{ opacity: 1, y: 0 }}
-											exit={{ opacity: 0, y: 10 }}
-											transition={{ duration: 0.2 }}
-											className="text-justify px-4 py-2 border-t-2 md:border-none dark:border-zinc-600 pt-4"
-										>
-											{
-												project[
-													`description_${currentLang}`
-												]
-											}
-										</motion.span>
-									)}
-								</AnimatePresence>
-							</div>
-						)}
-					</div>
-
-					<div className="p-4 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-						<div className="border-2 dark:border-zinc-600">
-							<div className="flex items-center justify-between px-4 py-2 border-b-4 dark:border-zinc-600">
-								<div className="flex items-center gap-2">
-									<div className="rounded-full w-4 h-4 bg-red-500" />
-									<div className="rounded-full w-4 h-4 bg-yellow-500" />
-									<div className="rounded-full w-4 h-4 bg-green-500" />
-								</div>
-
-								{project.link && (
-									<Button
-										href={project.link}
-										aria-label="Open the website in a new tab"
-									>
-										<ExternalLink size={15} />
-									</Button>
-								)}
-							</div>
-
-							{project.type === "website" ? (
-								<IframeProject link={project.link} />
-							) : (
-								<ImagesProject
-									images={[
-										project.thumbnail,
-										...project.images,
-									]}
-								/>
-							)}
-						</div>
-					</div>
-				</div>
-			</motion.div>
-		</motion.div>
-	);
-}
-
-function IframeProject({ link }: { link: projectRow["link"] }) {
-	const [scale, setScale] = useState(1);
-	const iframeRef = useRef<HTMLIFrameElement>(null);
-	const [errorIframe, setErrorIframe] = useState(false);
-	const [limitScale, setLimitScale] = useState({
-		min: window.innerWidth >= 768 ? 0.5 : 0.3,
-		max: window.innerWidth >= 768 ? 1.5 : 0.8,
-	});
-
-	useEffect(() => {
-		// adjust according to screen size since mobile screen is smaller, so the limit will be smaller
-		const handleResize = () => {
-			console.log(window.innerWidth);
-			setLimitScale({
-				min: window.innerWidth >= 768 ? 0.5 : 0.3,
-				max: window.innerWidth >= 768 ? 1.5 : 0.8,
-			});
-		};
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
-
-	const handleReset = () => {
-		setScale(1);
-		if (iframeRef.current) {
-			// refresh iframe
-			iframeRef.current.src = link;
-		}
-	};
-
-	const handleFullscreen = () => {
-		if (iframeRef.current) {
-			iframeRef.current.requestFullscreen();
-		}
-	};
-
-	const handleZoomIn = () => {
-		setScale((prev) => Math.min(limitScale.max, prev + 0.1));
-	};
-
-	const handleZoomOut = () => {
-		setScale((prev) => Math.max(limitScale.min, prev - 0.1));
-	};
-
-	return (
-		<>
-			<div className="h-[600px] relative">
-				{errorIframe ? (
-					<div className="flex items-center justify-center w-full h-full">
-						<h2 className="text-2xl font-bold">
-							{
-								"Error load the website, try to refresh using the refresh button"
-							}
-						</h2>
-					</div>
-				) : (
-					<iframe
-						ref={iframeRef}
-						src={link}
-						loading="lazy"
-						width="100%"
-						height="100%"
-						className="absolute top-0 left-0 w-full h-full"
-						style={{ zoom: `${scale}` }}
-						onError={() => setErrorIframe(true)}
-					/>
-				)}
-			</div>
-
-			<div className="flex items-center justify-between gap-2 px-4 py-2 border-t-4 dark:border-zinc-600">
-				<div className="flex items-center gap-2">
-					<Button
-						type="button"
-						aria-label="Refresh the website"
-						onClick={handleReset}
-					>
-						<RefreshCcw size={15} />
-					</Button>
-					<Button
-						type="button"
-						aria-label="Make the website fullscreen"
-						onClick={handleFullscreen}
-					>
-						<Expand size={15} />
-					</Button>
-				</div>
-
-				<div className="flex items-center gap-2">
-					<Button
-						type="button"
-						aria-label="Zoom out the website"
-						onClick={handleZoomOut}
-					>
-						<ZoomOut size={15} />
-					</Button>
-
-					<Button
-						type="button"
-						aria-label="Zoom in the website"
-						onClick={handleZoomIn}
-					>
-						<ZoomIn size={15} />
-					</Button>
-				</div>
-			</div>
-		</>
-	);
-}
-
-function ImagesProject({ images }: { images: projectRow["images"] }) {
-	const [currentIndex, setCurrentIndex] = useState(0);
-	const [imageLoading, setImageLoading] = useState(true);
-
-	const handlePrevious = () => {
-		setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-	};
-
-	// Function to show the next image
-	const handleNext = () => {
-		setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-	};
-
-	useEffect(() => {
-		setImageLoading(true);
-	}, [currentIndex]);
-
-	useEffect(() => {
-		setCurrentIndex(0);
-		setImageLoading(true);
-		const automaticChange = setInterval(() => {
-			handleNext();
-		}, 10000);
-
-		return () => {
-			clearInterval(automaticChange);
-		};
-	}, [images]);
-
-	if (!images || images.length === 0) {
-		return null;
-	}
-
-	return (
-		<div className="relative w-full">
-			{/* skeleton image */}
-			{imageLoading && (
-				<div className="absolute inset-0 animate-pulse bg-zinc-600 dark:bg-zinc-800" />
-			)}
-
-			<img
-				key={currentIndex}
-				src={images[currentIndex] || "/placeholder_project.avif"}
-				alt="project"
-				width={400}
-				height={250}
-				loading="lazy"
-				decoding="async"
-				className={`w-full h-full object-contain transition-opacity duration-300
-						${imageLoading ? "opacity-0" : "opacity-100"}`}
-				onError={(e) => {
-					setImageLoading(false);
-					e.currentTarget.src = "/placeholder_project.avif";
-				}}
-				onLoad={() => setImageLoading(false)}
-			/>
-
-			{images.length > 1 && (
-				<>
-					{/* Left/Previous Button */}
-					{currentIndex > 0 && (
-						<button
-							onClick={handlePrevious}
-							className="cursor-pointer absolute top-1/2 left-3 transform -translate-y-1/2 bg-white/70 hover:bg-white text-gray-800 rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300"
-							aria-label="Previous Image"
-						>
-							<ChevronLeft size={20} />
-						</button>
-					)}
-
-					{/* Right/Next Button */}
-					{currentIndex < images.length - 1 && (
-						<button
-							onClick={handleNext}
-							className="cursor-pointer absolute top-1/2 right-3 transform -translate-y-1/2 bg-white/70 hover:bg-white text-gray-800 rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300"
-							aria-label="Next Image"
-						>
-							<ChevronRight size={20} />
-						</button>
-					)}
-
-					{/* Dots */}
-				</>
-			)}
-			<div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
-				{images.map((_, index) => (
-					<button
-						key={index}
-						aria-label={`Go to slide ${index + 1}`}
-						onClick={() => setCurrentIndex(index)}
-						className={`cursor-pointer w-3 h-3 hover:bg-white rounded-full transition-colors duration-300
-							${index === currentIndex ? "bg-white" : "bg-white/70"}
-						`}
-					/>
-				))}
-			</div>
-		</div>
 	);
 }

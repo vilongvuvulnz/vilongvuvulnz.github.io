@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { useData } from "../contexts/DataContext";
 import { Mail } from "lucide-react";
 import Button from "./Button";

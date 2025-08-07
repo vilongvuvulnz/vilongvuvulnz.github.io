@@ -8,6 +8,7 @@ import NavBar from "./components/NavBar";
 import ErrorPage from "./pages/ErrorPage";
 import Profile from "./pages/Profile";
 import Footer from "./components/Footer";
+import Achievements from "./pages/Achievements";
 
 // for route management
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
 			<Route path="/" element={<InitialRedirector />} />
 			<Route path="/:lang" element={<LanguageLayout />}>
 				<Route index element={<Profile />} />
+				<Route path="achievements" element={<Achievements />} />
 				<Route
 					path="*"
 					element={

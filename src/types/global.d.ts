@@ -9,9 +9,15 @@ export interface projectRow {
     [key: string]: string;
 };
 
-export interface certificateRow {
+export interface achievementRow {
     name: string;
-    image: string;
+    type: string;
+    category: string;
+    scope: string;
+    skills: string[];
+    thumbnail: string;
+    images: string[];
+    [key: string]: string;
 };
 
 export interface supportedLangRow {

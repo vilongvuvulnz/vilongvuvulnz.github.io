@@ -5,13 +5,13 @@ import {
 	type ReactNode,
 	useContext,
 } from "react";
-import { fetchCertificates, fetchProject, fetchSupportedLangs, fetchTranslations } from "../lib/sheets";
+import { fetchAchievements, fetchProject, fetchSupportedLangs, fetchTranslations } from "../lib/sheets";
 import { useErrorBoundary } from "react-error-boundary"
-import type { certificateRow, projectRow, supportedLangRow, translations } from "../types/global";
+import type { achievementRow, projectRow, supportedLangRow, translations } from "../types/global";
 
 interface Content {
     projects: projectRow[];
-    certificates: certificateRow[];
+    achievements: achievementRow[];
     translations: translations;
     supportedLangs: supportedLangRow[];
     currentLang: string;
@@ -28,7 +28,7 @@ const DataContext = createContext<
 export function DataProvider({ children }: { children: ReactNode }) {
 	const [content, setContent] = useState<Content>({
 		projects: [],
-		certificates: [],
+		achievements: [],
 		translations: {},
 		supportedLangs: [],
 		currentLang: "",
@@ -42,7 +42,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 				const [projects, certificates, supportedLangs] =
 					await Promise.all([
 						fetchProject(),
-						fetchCertificates(),
+						fetchAchievements(),
 						fetchSupportedLangs(),
 					]);
 
@@ -50,7 +50,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 					...prev,
 					supportedLangs,
 					projects,
-					certificates,
+					achievements: certificates,
 				}));
 			} catch (erorr) {
 				console.error("Error fetching data:", erorr);

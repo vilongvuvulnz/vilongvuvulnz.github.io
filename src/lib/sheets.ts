@@ -1,6 +1,6 @@
 import Papa from "papaparse";
 import type {
-	certificateRow,
+	achievementRow,
 	projectRow,
 	supportedLangRow,
 	translations,
@@ -39,7 +39,7 @@ function isSupportedLangRow(item: unknown): item is supportedLangRow {
 	return isValid;
 }
 
-interface projectFromSource extends Omit<projectRow, "images"> {
+interface projectFromSource extends Omit<projectRow, "tech_stack" | "images"> {
 	tech_stack: string;
 	images: string;
 }
@@ -63,16 +63,27 @@ function isProjectRow(item: unknown): item is projectFromSource {
 	return isValid;
 }
 
-function isCertificateRow(item: unknown): item is certificateRow {
-	const i = item as certificateRow;
+interface achievementFromSource
+	extends Omit<achievementRow, "skills" | "images"> {
+	skills: string;
+	images: string;
+}
+
+function isAchievementsRow(item: unknown): item is achievementFromSource {
+	const i = item as achievementFromSource;
 	const isValid =
 		typeof i === "object" &&
 		i !== null &&
 		typeof i.name === "string" &&
-		typeof i.image === "string";
+		typeof i.type === "string" &&
+		typeof i.category === "string" &&
+		typeof i.scope === "string" &&
+		typeof i.skills === "string" &&
+		typeof i.thumbnail === "string" &&
+		typeof i.images === "string";
 
 	if (!isValid) {
-		console.error("Invalid certificate row:", item);
+		console.error("Invalid achievement row:", item);
 	}
 
 	return isValid;
@@ -142,7 +153,22 @@ export async function fetchProject(): Promise<projectRow[]> {
 	});
 }
 
-export async function fetchCertificates(): Promise<certificateRow[]> {
-	const data = await fetchData("Certificates");
-	return data.filter((item) => isCertificateRow(item));
+export async function fetchAchievements(): Promise<achievementRow[]> {
+	const data = await fetchData("Achievements");
+	const validRows = data.filter((item) => isAchievementsRow(item));
+
+	return validRows.map((item) => {
+		const imageUrls = item.images
+			? item.images.split(",").map((url) => url.trim())
+			: [];
+		const skills = item.skills
+			? item.skills.split(",").map((skill) => skill.trim())
+			: [];
+
+		return {
+			...item,
+			images: imageUrls,
+			skills,
+		} as achievementRow;
+	});
 }
