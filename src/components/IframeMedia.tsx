@@ -7,7 +7,7 @@ export function IframeMedia({ link }: { link: string }) {
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const [errorIframe, setErrorIframe] = useState(false);
 	const [limitScale, setLimitScale] = useState({
-		min: window.innerWidth >= 768 ? 0.5 : 0.3,
+		min: window.innerWidth >= 768 ? 0.5 : 0.2,
 		max: window.innerWidth >= 768 ? 1.5 : 0.8,
 	});
 
@@ -16,7 +16,7 @@ export function IframeMedia({ link }: { link: string }) {
 		const handleResize = () => {
 			console.log(window.innerWidth);
 			setLimitScale({
-				min: window.innerWidth >= 768 ? 0.5 : 0.3,
+				min: window.innerWidth >= 768 ? 0.5 : 0.2,
 				max: window.innerWidth >= 768 ? 1.5 : 0.8,
 			});
 		};

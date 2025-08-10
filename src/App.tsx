@@ -9,6 +9,7 @@ import ErrorPage from "./pages/ErrorPage";
 import Profile from "./pages/Profile";
 import Footer from "./components/Footer";
 import Achievements from "./pages/Achievements";
+import Contributions from "./pages/Contributions";
 
 // for route management
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
 			<Route path="/:lang" element={<LanguageLayout />}>
 				<Route index element={<Profile />} />
 				<Route path="achievements" element={<Achievements />} />
+				<Route path="contributions" element={<Contributions />} />
 				<Route
 					path="*"
 					element={

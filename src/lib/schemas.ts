@@ -35,7 +35,7 @@ export const TranslationsSchema = z.record(
 	z.record(z.string(), z.string()),
 );
 
-const LanguageRepoSchema = z.array(
+const LanguagesRepoSchema = z.array(
 	z.object({
 		name: z.string(),
 		color: z.string(),
@@ -43,14 +43,13 @@ const LanguageRepoSchema = z.array(
 	}),
 );
 
-export const ContributionSchema = z.object({
+export const ContributionsSchema = z.object({
 	profile: z.object({
 		username: z.string(),
 		name: z.string(),
 		avatarUrl: z.string(),
 		followers: z.number(),
 		following: z.number(),
-		staredRepos: z.number(),
 		totalRepos: z.number(),
 	}),
 	stats: z.object({
@@ -60,8 +59,12 @@ export const ContributionSchema = z.object({
 		totalPRs: z.number(),
 		totalIssues: z.number(),
 		contributedTo: z.number(),
+		rank: z.object({
+			level: z.string(),
+			percentile: z.number(),
+		}),
 	}),
-	topLanguages: LanguageRepoSchema,
+	topLanguages: LanguagesRepoSchema,
 	repositories: z.array(
 		z.object({
 			name: z.string(),
@@ -73,19 +76,18 @@ export const ContributionSchema = z.object({
 			createdAt: z.string(),
 			updatedAt: z.string(),
 			isPrivate: z.boolean(),
-			languages: LanguageRepoSchema,
+			languages: LanguagesRepoSchema,
 		}),
 	),
 });
 
-export const defaultContribution: Contribution = {
+export const defaultContributions: Contributions = {
 	profile: {
 		username: "N/A",
 		name: "User Not Found",
 		avatarUrl: "",
 		followers: 0,
 		following: 0,
-		staredRepos: 0,
 		totalRepos: 0,
 	},
 	stats: {
@@ -95,6 +97,10 @@ export const defaultContribution: Contribution = {
 		totalPRs: 0,
 		totalIssues: 0,
 		contributedTo: 0,
+		rank: {
+			level: "N/A",
+			percentile: 0,
+		}
 	},
 	topLanguages: [],
 	repositories: [],
@@ -104,4 +110,5 @@ export type Project = z.infer<typeof ProjectSchema>;
 export type Achievement = z.infer<typeof AchievementSchema>;
 export type SupportedLang = z.infer<typeof SupportedLangSchema>;
 export type Translations = z.infer<typeof TranslationsSchema>;
-export type Contribution = z.infer<typeof ContributionSchema>;
+export type Contributions = z.infer<typeof ContributionsSchema>;
+export type LanguagesRepo = z.infer<typeof LanguagesRepoSchema>;

@@ -17,13 +17,14 @@ import ImagesSlider from "../components/ImagesSlider";
 
 export default function Achievements() {
 	const {
-		translations: { achievement: translations },
+		translations: { achievements: translations, sorting },
 		achievements,
 	} = useData();
 	const [type, setType] = useState("");
 	const [category, setCategory] = useState("");
 	const [scope, setScope] = useState("");
 	const [skill, setSkill] = useState("");
+	const [sort, setSort] = useState("");
 	const types = useMemo(() => {
 		return [
 			...new Set(achievements.map((achievement) => achievement.type)),
@@ -102,6 +103,34 @@ export default function Achievements() {
 						})),
 						setValue: setSkill,
 						value: skill,
+					},
+					{
+						name: "sort",
+						label: "sort by (default: newest)",
+						ariaLabel: "sort projects by",
+						defaultValue: sorting?.["newest"] || "newest",
+						options: [
+							{
+								label: sorting?.["oldest"] || "Oldest",
+								value: "oldest",
+							},
+							{
+								label: sorting?.["name-asc"] || "Name (A-Z)",
+								value: "name-asc",
+								sortingMethod: (a, b) => {
+									return a.name.localeCompare(b.name);
+								},
+							},
+							{
+								label: sorting?.["name-desc"] || "Name (Z-A)",
+								value: "name-desc",
+								sortingMethod: (a, b) => {
+									return b.name.localeCompare(a.name);
+								},
+							},
+						],
+						setValue: setSort,
+						value: sort,
 					},
 				],
 			}}

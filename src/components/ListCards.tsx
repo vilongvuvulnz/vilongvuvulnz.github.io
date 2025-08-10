@@ -1,6 +1,22 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { File, RefreshCcw, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
+
+interface CardConfig<TData extends Record<string, unknown>> {
+	titleField?: keyof TData;
+	imageField: keyof TData;
+	placeholderImage: string;
+	buttons: {
+		leftButton?: (
+			data: TData,
+			setOpenModal: React.Dispatch<React.SetStateAction<boolean>>,
+		) => React.ReactNode;
+		rightButton?: (
+			data: TData,
+			setOpenModal: React.Dispatch<React.SetStateAction<boolean>>,
+		) => React.ReactNode;
+	};
+}
 
 interface ListCardsProps<TData extends Record<string, unknown>> {
 	title: string;
@@ -19,26 +35,22 @@ interface ListCardsProps<TData extends Record<string, unknown>> {
 			options: {
 				label: string;
 				value: string;
+				sortingMethod?: (a: TData, b: TData) => number;
 			}[];
 			setValue: React.Dispatch<React.SetStateAction<string>>;
 			value: string;
 		}[];
 	};
-	cardConfig: {
-		titleField?: keyof TData;
-		imageField: keyof TData;
-		placeholderImage: string;
-		buttons: {
-			leftButton?: (
-				data: TData,
-				setOpenModal: React.Dispatch<React.SetStateAction<boolean>>,
-			) => React.ReactNode;
-			rightButton?: (
-				data: TData,
-				setOpenModal: React.Dispatch<React.SetStateAction<boolean>>,
-			) => React.ReactNode;
-		};
-	};
+	cardConfig?: CardConfig<TData>;
+	CustomCard?: (
+		data: TData,
+		index: number,
+		search: string,
+		modal?: (
+			data: TData,
+			setOpenModal: React.Dispatch<React.SetStateAction<boolean>>,
+		) => React.ReactNode,
+	) => React.ReactNode;
 	modal?: (
 		data: TData,
 		setOpenModal: React.Dispatch<React.SetStateAction<boolean>>,
@@ -51,10 +63,14 @@ export default function ListCards<TData extends Record<string, unknown>>({
 	searchConfig,
 	filterConfig,
 	cardConfig,
+	CustomCard,
 	modal,
 }: ListCardsProps<TData>) {
-	const titleCardKey = (cardConfig.titleField ||
-		searchConfig?.fieldSearch) as string | undefined;
+	const titleCardKey =
+		cardConfig &&
+		((cardConfig.titleField || searchConfig?.fieldSearch) as
+			| string
+			| undefined);
 	const [search, setSearch] = useState("");
 	const groupedSelectFields = useMemo(() => {
 		const result = [];
@@ -65,41 +81,83 @@ export default function ListCards<TData extends Record<string, unknown>>({
 		return result;
 	}, [filterConfig.selectField]);
 
-	const filteredData = useMemo(
-		() =>
-			dataSet
-				.filter((data) => {
-					const inFilter = filterConfig.selectField.every(
-						(select) => {
-							const value = data[select.name];
-							const checkIfArray = Array.isArray(value);
-							return (
-								select.value === "" ||
-								(checkIfArray
-									? (value as string[]).includes(select.value)
-									: value === select.value)
-							);
-						},
-					);
+	function getValueByPath(obj: any, path: string | string[]): any {
+		// Convert path to an array if it's a string
+		const parts = Array.isArray(path) ? path : path.split(".");
 
-					const inSearch =
-						search === "" ||
-						(data[searchConfig?.fieldSearch || "name"] as string)
-							.toLowerCase()
-							.includes(search.toLowerCase());
-					return inFilter && inSearch;
-				})
-				// reverse the order so the most recent project is on top
-				.reverse(),
-		[
-			dataSet,
-			search,
-			...filterConfig.selectField.map((select) => select.value),
-		],
-	);
+		// Destructure the first part and the rest of the path
+		const [currentPart, ...remainingParts] = parts;
+
+		// If the object is null/undefined or the path is exhausted, return the object
+		if (obj == null || currentPart === undefined) {
+			return obj;
+		}
+
+		if (currentPart === "*") {
+			// If we hit a wildcard, the current value must be an array
+			if (!Array.isArray(obj)) {
+				return undefined;
+			}
+			// Map over the array and recursively call the function for each item
+			// with the rest of the path. This will collect the results.
+			return obj.map((item) => getValueByPath(item, remainingParts));
+		}
+
+		// If it's a normal key, just move to the next level of the object
+		// and recurse with the rest of the path.
+		return getValueByPath(obj[currentPart], remainingParts);
+	}
+
+	const processedData = useMemo(() => {
+		const filtered = dataSet.filter((data) => {
+			const inFilter = filterConfig.selectField.every((select) => {
+				if (select.name === "sort") return true; // Skip the sort field
+				const value = getValueByPath(data, select.name);
+				const checkIfArray = Array.isArray(value);
+				return (
+					select.value === "" ||
+					(checkIfArray
+						? (value as string[]).includes(select.value)
+						: value === select.value)
+				);
+			});
+
+			const inSearch =
+				search === "" ||
+				(data[searchConfig?.fieldSearch || "name"] as string)
+					.toLowerCase()
+					.includes(search.toLowerCase());
+
+			return inFilter && inSearch;
+		});
+
+		// Find the select field that controls sorting
+		const sortController = filterConfig.selectField.find(
+			(field) => field.name === "sort",
+		);
+		const selectedValue = sortController?.value;
+		const selectedOption = sortController?.options.find(
+			(opt) => opt.value === selectedValue,
+		);
+		const activeSortMethod = selectedOption?.sortingMethod;
+
+		if (activeSortMethod) {
+			return [...filtered].sort(activeSortMethod);
+		} else if (selectedValue === "oldest") {
+			// If "Oldest" is selected, return the original filtered order.
+			return filtered;
+		} else {
+			// For any other case (including the default 'newest-default'), reverse.
+			return filtered.reverse();
+		}
+	}, [
+		dataSet,
+		search,
+		...filterConfig.selectField.map((select) => select.value),
+	]);
 
 	return (
-		<div className="col-span-4 flex flex-col gap-4">
+		<div className="col-span-full flex flex-col gap-4">
 			{/* Headline of the section */}
 			<motion.div
 				initial={{ rotateX: -90 }}
@@ -110,7 +168,7 @@ export default function ListCards<TData extends Record<string, unknown>>({
 			>
 				<File size={25} />
 				<h1 className="text-md">{title}</h1>
-				<p>({filteredData.length})</p>
+				<p>({processedData.length})</p>
 			</motion.div>
 
 			<div
@@ -162,6 +220,11 @@ export default function ListCards<TData extends Record<string, unknown>>({
 									field.setValue(e.target.value);
 								}}
 								aria-label={field.ariaLabel}
+								title={
+									field.options.find(
+										(opt) => opt.value === field.value,
+									)?.label || field.label
+								}
 								className={`min-w-0 flex-1 text-sm lg:text-base truncate cursor-pointer px-2 py-2 font-semibold uppercase h-full dark:border-zinc-600 outline-none
 									${searchConfig ? "lg:border-l-4" : ""} ${index === 1 ? "border-l-4" : ""}`}
 							>
@@ -207,21 +270,33 @@ export default function ListCards<TData extends Record<string, unknown>>({
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				<AnimatePresence>
-					{filteredData.map((data, index) => (
-						<Card
-							key={
-								titleCardKey
-									? (data?.[titleCardKey] as string)
-									: index
-							}
-							data={data}
-							index={index}
-							modal={modal}
-							search={search}
-							cardConfig={cardConfig}
-							titleCardKey={titleCardKey}
-						/>
-					))}
+					{processedData.map((data, index) => {
+						const key = titleCardKey
+							? String(data?.[titleCardKey])
+							: index;
+
+						if (CustomCard) {
+							return (
+								<React.Fragment key={key}>
+									{CustomCard(data, index, search, modal)}
+								</React.Fragment>
+							);
+						}
+						if (cardConfig) {
+							return (
+								<Card
+									key={key}
+									data={data}
+									index={index}
+									modal={modal}
+									search={search}
+									cardConfig={cardConfig}
+									titleCardKey={titleCardKey}
+								/>
+							);
+						}
+						return null;
+					})}
 				</AnimatePresence>
 			</div>
 		</div>
@@ -233,7 +308,7 @@ interface CardProps<T extends Record<string, unknown>> {
 	index: number;
 	modal?: ListCardsProps<T>["modal"];
 	search: string;
-	cardConfig: ListCardsProps<T>["cardConfig"];
+	cardConfig: CardConfig<T>;
 	titleCardKey: string | undefined;
 }
 
@@ -247,18 +322,27 @@ function Card<T extends Record<string, unknown>>({
 }: CardProps<T>) {
 	const [openModal, setOpenModal] = useState(false);
 	const [imageLoading, setImageLoading] = useState(true);
+	function Highlight({ text }: { text: string }) {
+		if (!search.trim()) {
+			return <span>{text}</span>;
+		}
+		const regex = new RegExp(`(${search})`, "gi");
+		const parts = text.split(regex);
 
-	const highlightName = (title: string) => {
-		if (!search) return title;
-		const regex = new RegExp(search, "gi");
-		return title
-			.toLowerCase()
-			.replace(
-				regex,
-				(match: string) =>
-					`<mark class="bg-yellow-500">${match}</mark>`,
-			);
-	};
+		return (
+			<span>
+				{parts.map((part, i) =>
+					regex.test(part) ? (
+						<mark key={i} className="bg-yellow-500">
+							{part}
+						</mark>
+					) : (
+						<span key={i}>{part}</span>
+					),
+				)}
+			</span>
+		);
+	}
 
 	return (
 		<motion.div
@@ -313,14 +397,9 @@ function Card<T extends Record<string, unknown>>({
 
 			{titleCardKey && (data?.[titleCardKey] as string) && (
 				<div className="px-4 py-3 border-t-4 border-zinc-900 dark:border-zinc-600">
-					<h1
-						className="font-bold text-xl text-center uppercase"
-						dangerouslySetInnerHTML={{
-							__html: highlightName(
-								data?.[titleCardKey] as string,
-							),
-						}}
-					/>
+					<h1 className="font-bold text-xl text-center uppercase">
+						<Highlight text={data?.[titleCardKey] as string} />
+					</h1>
 				</div>
 			)}
 

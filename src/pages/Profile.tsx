@@ -108,12 +108,12 @@ function ProfileCard() {
 			animate={{ rotateX: 0 }}
 			exit={{ rotateX: 90 }}
 			transition={{ duration: 0.5 }}
-			className="p-4 col-span-4 lg:col-span-1 bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] "
+			className="col-span-4 lg:col-span-1 bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] "
 		>
 			<div className="relative mb-4">
 				<img
 					alt="Profile Banner"
-					className="h-36 w-full object-cover border-2 rounded"
+					className="h-36 w-full object-cover border-2"
 					src="/banner_profile.avif"
 					loading="eager"
 					decoding="async"
@@ -134,7 +134,7 @@ function ProfileCard() {
 				</div>
 			</div>
 
-			<div className="pt-18 flex flex-col items-center justify-center">
+			<div className="p-4 pt-18 flex flex-col items-center justify-center">
 				<h2 className="text-xl font-bold ">
 					{import.meta.env.VITE_FULL_NAME || "Ketut Shridhara"}
 				</h2>
@@ -355,10 +355,11 @@ function DetailsCard() {
 function Projects() {
 	const {
 		projects,
-		translations: { project: translations },
+		translations: { projects: translations, sorting },
 	} = useData();
 	const [type, setType] = useState("");
 	const [techStack, setTechStack] = useState("");
+	const [sort, setSort] = useState("");
 	const types = useMemo(() => {
 		return [...new Set(projects.map((project) => project.type))].sort();
 	}, [projects]);
@@ -401,6 +402,34 @@ function Projects() {
 						})),
 						setValue: setTechStack,
 						value: techStack,
+					},
+					{
+						name: "sort",
+						label: "sort by (default: newest)",
+						ariaLabel: "sort projects by",
+						defaultValue: sorting?.["newest"] || "newest",
+						options: [
+							{
+								label: sorting?.["oldest"] || "Oldest",
+								value: "oldest",
+							},
+							{
+								label: sorting?.["name-asc"] || "Name (A-Z)",
+								value: "name-asc",
+								sortingMethod: (a, b) => {
+									return a.name.localeCompare(b.name);
+								},
+							},
+							{
+								label: sorting?.["name-desc"] || "Name (Z-A)",
+								value: "name-desc",
+								sortingMethod: (a, b) => {
+									return b.name.localeCompare(a.name);
+								},
+							},
+						],
+						setValue: setSort,
+						value: sort,
 					},
 				],
 			}}
