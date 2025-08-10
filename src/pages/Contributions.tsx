@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useData } from "../contexts/DataContext";
 import {
 	BarChart,
@@ -172,17 +172,23 @@ type LanguagesWithPercentage = (LanguagesRepo[number] & {
 function LanguagesBar({ languages }: { languages: LanguagesWithPercentage }) {
 	return (
 		<div className="flex h-3 w-full overflow-hidden rounded-full">
-			{languages.map((lang) => (
-				<div
-					key={lang.name}
-					className="h-full"
-					style={{
-						width: `${lang.percentage}%`,
-						backgroundColor: lang.color,
-					}}
-					title={`${lang.name}: ${lang.percentage.toFixed(2)}%`}
-				/>
-			))}
+			<AnimatePresence>
+				{languages.map((lang, index) => (
+					<motion.div
+						initial={{ width: 0 }}
+						animate={{ width: `${lang.percentage}%` }}
+						exit={{ width: 0 }}
+						transition={{ duration: 0.5, delay: index * 0.1 }}
+						key={lang.name}
+						className="h-full"
+						style={{
+							width: `${lang.percentage}%`,
+							backgroundColor: lang.color,
+						}}
+						title={`${lang.name}: ${lang.percentage.toFixed(2)}%`}
+					/>
+				))}
+			</AnimatePresence>
 		</div>
 	);
 }
@@ -194,26 +200,33 @@ function LanguagesDescription({
 }) {
 	return (
 		<div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-			{languages.map((lang) => (
-				<div key={lang.name} className="flex items-center gap-2">
-					<span
-						className="h-3 w-3 flex-shrink-0 rounded-full"
-						style={{ backgroundColor: lang.color }}
-					/>
-					<div className="flex min-w-0 flex-1 items-center justify-between gap-2">
+			<AnimatePresence>
+				{languages.map((lang, index) => (
+					<motion.div 
+					initial={{ opacity: 0, y: -10 }}
+					animate={{ opacity: 1, y: 0 }}
+					exit={{ opacity: 0, y: -10 }}
+					transition={{ duration: 0.5, delay: index * 0.1 }}
+					key={lang.name} className="flex items-center gap-2">
 						<span
-							className="truncate font-semibold"
-							title={lang.name}
-						>
-							{lang.name}
-						</span>
+							className="h-3 w-3 flex-shrink-0 rounded-full"
+							style={{ backgroundColor: lang.color }}
+						/>
+						<div className="flex min-w-0 flex-1 items-center justify-between gap-2">
+							<span
+								className="truncate font-semibold"
+								title={lang.name}
+							>
+								{lang.name}
+							</span>
 
-						<span className="flex-shrink-0 text-zinc-500 dark:text-zinc-400">
-							{lang.percentage.toFixed(2)}%
-						</span>
-					</div>
-				</div>
-			))}
+							<span className="flex-shrink-0 text-zinc-500 dark:text-zinc-400">
+								{lang.percentage.toFixed(2)}%
+							</span>
+						</div>
+					</motion.div>
+				))}
+			</AnimatePresence>
 		</div>
 	);
 }
