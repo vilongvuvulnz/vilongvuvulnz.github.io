@@ -10,12 +10,15 @@ import {
 	AlignStartVertical,
 	type LucideIcon,
 	Star,
-	ClockArrowUp,
 	Lock,
 	Globe,
 	FileCode2,
 	GitFork,
 	Calendar,
+	History,
+	GitPullRequestArrow,
+	Info,
+	BookMarked,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
@@ -419,7 +422,7 @@ function StatsCard() {
 						value={contributions.stats.totalStars}
 					/>
 					<GetStat
-						Icon={ClockArrowUp}
+						Icon={History}
 						name={`${(
 							translations?.["stats-commits"] ||
 							`Total Commits :year`
@@ -434,17 +437,17 @@ function StatsCard() {
 						value={contributions.stats.totalCommits}
 					/>
 					<GetStat
-						Icon={ClockArrowUp}
+						Icon={GitPullRequestArrow}
 						name={translations?.["stats-prs"] || "Total PRs:"}
 						value={contributions.stats.totalPRs}
 					/>
 					<GetStat
-						Icon={ClockArrowUp}
+						Icon={Info}
 						name={translations?.["stats-issues"] || "Total Issues:"}
 						value={contributions.stats.totalIssues}
 					/>
 					<GetStat
-						Icon={ClockArrowUp}
+						Icon={BookMarked}
 						name={
 							translations?.["stats-contributed-to"] ||
 							"Contributed to (last year):"
