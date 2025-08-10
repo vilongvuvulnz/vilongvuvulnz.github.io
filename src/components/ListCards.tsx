@@ -106,10 +106,11 @@ export default function ListCards<TData extends Record<string, unknown>>({
 				animate={{ rotateX: 0 }}
 				exit={{ rotateX: 90 }}
 				transition={{ duration: 0.5 }}
-				className="px-4 py-2 flex gap-2 items-center bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+				className="font-semibold  px-4 py-2 flex gap-2 items-center bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 			>
 				<File size={25} />
-				<h1 className="font-semibold text-md">{title}</h1>
+				<h1 className="text-md">{title}</h1>
+				<p>({filteredData.length})</p>
 			</motion.div>
 
 			<div

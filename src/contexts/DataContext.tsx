@@ -5,16 +5,30 @@ import {
 	type ReactNode,
 	useContext,
 } from "react";
-import { fetchAchievements, fetchProject, fetchSupportedLangs, fetchTranslations } from "../lib/sheets";
-import { useErrorBoundary } from "react-error-boundary"
-import type { achievementRow, projectRow, supportedLangRow, translations } from "../types/global";
+import {
+	fetchAchievements,
+	fetchProject,
+	fetchSupportedLangs,
+	fetchTranslations,
+} from "../lib/sheets";
+import { useErrorBoundary } from "react-error-boundary";
+import { fetchContribution } from "../lib/github";
+import {
+	defaultContribution,
+	type Achievement,
+	type Contribution,
+	type Project,
+	type SupportedLang,
+	type Translations,
+} from "../lib/schemas";
 
 interface Content {
-    projects: projectRow[];
-    achievements: achievementRow[];
-    translations: translations;
-    supportedLangs: supportedLangRow[];
-    currentLang: string;
+	supportedLangs: SupportedLang[];
+	projects: Project[];
+	achievements: Achievement[];
+	translations: Translations;
+	contribution: Contribution;
+	currentLang: string;
 }
 
 const DataContext = createContext<
@@ -27,10 +41,11 @@ const DataContext = createContext<
 
 export function DataProvider({ children }: { children: ReactNode }) {
 	const [content, setContent] = useState<Content>({
+		supportedLangs: [],
 		projects: [],
 		achievements: [],
 		translations: {},
-		supportedLangs: [],
+		contribution: defaultContribution,
 		currentLang: "",
 	});
 	const [isLoading, setIsLoading] = useState(true);
@@ -39,18 +54,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		const loadData = async () => {
 			try {
-				const [projects, certificates, supportedLangs] =
+				const [supportedLangs, projects, achievements, contribution] =
 					await Promise.all([
+						fetchSupportedLangs(),
 						fetchProject(),
 						fetchAchievements(),
-						fetchSupportedLangs(),
+						fetchContribution(),
 					]);
 
 				setContent((prev) => ({
 					...prev,
 					supportedLangs,
 					projects,
-					achievements: certificates,
+					achievements,
+					contribution,
 				}));
 			} catch (erorr) {
 				console.error("Error fetching data:", erorr);
@@ -59,7 +76,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 		};
 		loadData();
 	}, []);
-
+	
 	const loadContentForLang = async (langCode: string) => {
 		setIsLoading(true);
 		try {

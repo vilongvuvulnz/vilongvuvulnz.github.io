@@ -4,7 +4,7 @@ import Button from "./Button";
 
 export default function Footer() {
 	const {
-		translations: { details, translations: footer },
+		translations: { details },
 	} = useData();
 
 	return (
@@ -12,7 +12,7 @@ export default function Footer() {
 			<div className="flex items-center gap-2">
 				<Button
 					href={
-						footer?.["github-link"] || "https://github.com/kiuyha"
+						import.meta.env.VITE_GITHUB_LINK || "https://github.com/kiuyha"
 					}
 					aria-label="see my github profile"
 				>
@@ -27,7 +27,7 @@ export default function Footer() {
 
 				<Button
 					href={
-						footer?.["linkedin-link"] ||
+						import.meta.env.VITE_LINKEDIN_LINK ||
 						"https://www.linkedin.com/in/ketut-shridhara-46bb792a5"
 					}
 					aria-label="see my linkedin profile"
@@ -54,7 +54,7 @@ export default function Footer() {
 					&copy; {new Date().getFullYear()} { import.meta.env.VITE_FULL_NAME || 'Ketut Shridhara'}
 				</span>
 				<span className="text-sm">
-					{footer?.["copyright"] || "All rights reserved"}
+					All rights reserved
 				</span>
 			</div>
 		</footer>

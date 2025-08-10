@@ -1,10 +1,16 @@
 import Papa from "papaparse";
-import type {
-	achievementRow,
-	projectRow,
-	supportedLangRow,
-	translations,
-} from "../types/global";
+import z from "zod";
+import {
+	AchievementSchema,
+	BaseAchievementSchema,
+	BaseProjectSchema,
+	ProjectSchema,
+	SupportedLangSchema,
+	type Achievement,
+	type Project,
+	type SupportedLang,
+	type Translations,
+} from "./schemas";
 
 const SPREADSHEET_ID = import.meta.env.VITE_SPREADSHEET_ID;
 function fetchData(sheetName: string): Promise<Record<string, unknown>[]> {
@@ -24,151 +30,128 @@ function fetchData(sheetName: string): Promise<Record<string, unknown>[]> {
 	});
 }
 
-function isSupportedLangRow(item: unknown): item is supportedLangRow {
-	const i = item as supportedLangRow;
-	const isValid =
-		typeof i === "object" &&
-		i !== null &&
-		typeof i.code === "string" &&
-		typeof i.name === "string" &&
-		typeof i.sheetName === "string";
-
-	if (!isValid) {
-		console.error("Invalid supported lang row:", item);
-	}
-	return isValid;
-}
-
-interface projectFromSource extends Omit<projectRow, "tech_stack" | "images"> {
-	tech_stack: string;
-	images: string;
-}
-
-function isProjectRow(item: unknown): item is projectFromSource {
-	const i = item as projectFromSource;
-	const isValid =
-		typeof i === "object" &&
-		i !== null &&
-		typeof i.name === "string" &&
-		typeof i.tech_stack === "string" &&
-		typeof i.thumbnail === "string" &&
-		typeof i.link === "string" &&
-		typeof i.github_link === "string" &&
-		typeof i.images === "string" &&
-		typeof i.type === "string";
-
-	if (!isValid) {
-		console.error("Invalid project row:", item);
-	}
-	return isValid;
-}
-
-interface achievementFromSource
-	extends Omit<achievementRow, "skills" | "images"> {
-	skills: string;
-	images: string;
-}
-
-function isAchievementsRow(item: unknown): item is achievementFromSource {
-	const i = item as achievementFromSource;
-	const isValid =
-		typeof i === "object" &&
-		i !== null &&
-		typeof i.name === "string" &&
-		typeof i.type === "string" &&
-		typeof i.category === "string" &&
-		typeof i.scope === "string" &&
-		typeof i.skills === "string" &&
-		typeof i.thumbnail === "string" &&
-		typeof i.images === "string";
-
-	if (!isValid) {
-		console.error("Invalid achievement row:", item);
-	}
-
-	return isValid;
-}
-
-interface translationFromSource {
-	group: string;
-	key: string;
-	value: string;
-}
-
-function isTranslationRow(item: unknown): item is translationFromSource {
-	const i = item as translationFromSource;
-	const isValid =
-		typeof i === "object" &&
-		i !== null &&
-		typeof i.group === "string" &&
-		typeof i.key === "string" &&
-		typeof i.value === "string";
-
-	if (!isValid) {
-		console.error("Invalid translation row:", item);
-	}
-
-	return isValid;
-}
+const TranslationFromSourceSchema = z.array(
+	z.object({
+		group: z.string(),
+		key: z.string(),
+		value: z.string(),
+	}),
+);
 
 export async function fetchTranslations(
 	sheetName: string,
-): Promise<translations> {
+): Promise<Translations> {
 	const data = await fetchData(sheetName);
-	return data.reduce((acc: Record<string, Record<string, string>>, item) => {
-		if (isTranslationRow(item)) {
-			const { group, key, value } = item;
 
-			if (!acc[group]) {
-				acc[group] = {};
-			}
-			acc[group][key] = value;
+	const validationResult = TranslationFromSourceSchema.safeParse(data);
+	if (!validationResult.success) {
+		console.error(
+			"Invalid translation data received from source:",
+			z.prettifyError(validationResult.error),
+		);
+		return {};
+	}
+
+	return validationResult.data.reduce((acc, item) => {
+		const { group, key, value } = item;
+
+		if (!acc[group]) {
+			// If the group doesn't exist, create it
+			acc[group] = {};
 		}
+
+		acc[group][key] = value;
 		return acc;
-	}, {});
+	}, {} as Translations);
 }
 
-export async function fetchSupportedLangs(): Promise<supportedLangRow[]> {
+export async function fetchSupportedLangs(): Promise<SupportedLang[]> {
 	const data = await fetchData("supportedLangs");
-	return data.filter((item) => isSupportedLangRow(item));
+	const validResult = z.array(SupportedLangSchema).safeParse(data);
+
+	if (!validResult.success) {
+		console.error(
+			"Invalid supported lang data received from source:",
+			z.prettifyError(validResult.error),
+		);
+		return [];
+	}
+
+	return validResult.data;
 }
 
-export async function fetchProject(): Promise<projectRow[]> {
+const ParseProjectSchema = z.array(
+	BaseProjectSchema.omit({
+		tech_stack: true,
+		images: true,
+	})
+		.extend({
+			tech_stack: z.string(),
+			images: z.string(),
+		})
+		.catchall(z.string())
+		.transform((item) => {
+			return {
+				...item,
+				images: item.images
+					? item.images.split(",").map((url) => url.trim())
+					: [],
+					tech_stack: item.tech_stack
+					? item.tech_stack.split(",").map((tech) => tech.trim())
+					: [],
+			};
+		})
+		.pipe(ProjectSchema)
+);
+
+export async function fetchProject(): Promise<Project[]> {
 	const data = await fetchData("Projects");
-	const validRows = data.filter((item) => isProjectRow(item));
-
-	return validRows.map((item) => {
-		const imageUrls = item.images
-			? item.images.split(",").map((url) => url.trim())
-			: [];
-		const techStack = item.tech_stack
-			? item.tech_stack.split(",").map((tech) => tech.trim())
-			: [];
-
-		return {
-			...item,
-			images: imageUrls,
-			tech_stack: techStack,
-		} as projectRow;
-	});
+	const validResult = ParseProjectSchema.safeParse(data);
+	if (!validResult.success) {
+		console.error(
+			"Invalid project data received from source:",
+			z.prettifyError(validResult.error),
+		);
+		return [];
+	}
+	
+	return validResult.data;
 }
 
-export async function fetchAchievements(): Promise<achievementRow[]> {
+const ParseAchievementSchema = z.array(
+	BaseAchievementSchema.omit({
+		skills: true,
+		images: true,
+	})
+		.extend({
+			skills: z.string(),
+			images: z.string(),
+		})
+		.transform((item) => {
+			return {
+				...item,
+				images: item.images
+					? item.images.split(",").map((url) => url.trim())
+					: [],
+				skills: item.skills
+					? item.skills.split(",").map((skill) => skill.trim())
+					: [],
+			};
+		})
+		.pipe(AchievementSchema),
+);
+
+export async function fetchAchievements(): Promise<Achievement[]> {
 	const data = await fetchData("Achievements");
-	const validRows = data.filter((item) => isAchievementsRow(item));
+	const validResult = ParseAchievementSchema.safeParse(data);
 
-	return validRows.map((item) => {
-		const imageUrls = item.images
-			? item.images.split(",").map((url) => url.trim())
-			: [];
-		const skills = item.skills
-			? item.skills.split(",").map((skill) => skill.trim())
-			: [];
+	if (!validResult.success) {
+		console.error(
+			"Invalid achievement data received from source:",
+			z.prettifyError(validResult.error),
+		);
+		return [];
+	}
 
-		return {
-			...item,
-			images: imageUrls,
-			skills,
-		} as achievementRow;
-	});
+	return validResult.data;
 }
