@@ -228,14 +228,14 @@ export default function ListCards<TData extends Record<string, unknown>>({
 								className={`min-w-0 flex-1 text-sm lg:text-base truncate cursor-pointer px-2 py-2 font-semibold uppercase h-full dark:border-zinc-600 outline-none
 									${searchConfig ? "lg:border-l-4" : ""} ${index === 1 ? "border-l-4" : ""}`}
 							>
-								<option value="">
+								<option value="" className="dark:bg-zinc-900">
 									{(field.defaultValue || field.label)
 										.replace("_", " ")
 										.toUpperCase()}
 								</option>
 
 								{field.options.map((option, index) => (
-									<option key={index} value={option.value}>
+									<option key={index} value={option.value} className="dark:bg-zinc-900">
 										{option.label
 											.replace("_", " ")
 											.toUpperCase()}

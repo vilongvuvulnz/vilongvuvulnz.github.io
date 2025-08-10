@@ -534,25 +534,73 @@ function Repositories() {
 							},
 							{
 								label:
-									sorting?.["updatedAt-desc"] ||
-									"Newest (Updated)",
-								value: "updatedAt-desc",
+									sorting?.["size-desc"] ||
+									"Largest size",
+								value: "size-desc",
 								sortingMethod: (a, b) => {
 									return (
-										new Date(b.updatedAt).getTime() -
-										new Date(a.updatedAt).getTime()
+										b.sizeInKB -
+										a.sizeInKB
 									);
 								},
 							},
 							{
 								label:
-									sorting?.["updatedAt-asc"] ||
-									"Oldest (Updated)",
-								value: "updatedAt-asc",
+									sorting?.["size-asc"] ||
+									"Smallest size",
+								value: "size-asc",
 								sortingMethod: (a, b) => {
 									return (
-										new Date(a.updatedAt).getTime() -
-										new Date(b.updatedAt).getTime()
+										a.sizeInKB -
+										b.sizeInKB
+									);
+								},
+							},
+							{
+								label:
+									sorting?.["stars-desc"] ||
+									"Most stars",
+								value: "stars-desc",
+								sortingMethod: (a, b) => {
+									return (
+										b.stars -
+										a.stars
+									);
+								},
+							},
+							{
+								label:
+									sorting?.["stars-asc"] ||
+									"Least stars",
+								value: "stars-asc",
+								sortingMethod: (a, b) => {
+									return (
+										a.stars -
+										b.stars
+									);
+								},
+							},
+							{
+								label:
+									sorting?.["forks-desc"] ||
+									"Most forks",
+								value: "forks-desc",
+								sortingMethod: (a, b) => {
+									return (
+										b.forks -
+										a.forks
+									);
+								},
+							},
+							{
+								label:
+									sorting?.["forks-asc"] ||
+									"Least forks",
+								value: "forks-asc",
+								sortingMethod: (a, b) => {
+									return (
+										a.forks -
+										b.forks
 									);
 								},
 							},
@@ -577,6 +625,30 @@ function Repositories() {
 									return (
 										new Date(a.createdAt).getTime() -
 										new Date(b.createdAt).getTime()
+									);
+								},
+							},
+							{
+								label:
+									sorting?.["updatedAt-desc"] ||
+									"Newest (Updated)",
+								value: "updatedAt-desc",
+								sortingMethod: (a, b) => {
+									return (
+										new Date(b.updatedAt).getTime() -
+										new Date(a.updatedAt).getTime()
+									);
+								},
+							},
+							{
+								label:
+									sorting?.["updatedAt-asc"] ||
+									"Oldest (Updated)",
+								value: "updatedAt-asc",
+								sortingMethod: (a, b) => {
+									return (
+										new Date(a.updatedAt).getTime() -
+										new Date(b.updatedAt).getTime()
 									);
 								},
 							},
