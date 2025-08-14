@@ -3,7 +3,6 @@ import { useData } from "../contexts/DataContext";
 import {
 	BarChart,
 	Book,
-	Code2Icon,
 	Donut,
 	UserCheck,
 	Users,
