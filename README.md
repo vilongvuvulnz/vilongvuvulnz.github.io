@@ -1,4 +1,4 @@
-# Portofolio Website
+# Portfolio Website
 
 
 This is web created using Vite and React. You can test it in <a href="https://kiuyha.my.id" target="_blank">kiuyha.my.id</a>

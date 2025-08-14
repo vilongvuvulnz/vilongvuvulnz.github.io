@@ -293,7 +293,7 @@ function TopLangsCard() {
 			{/* Header and Toggle Button */}
 			<div className="p-4 flex items-center justify-between border-b-2 dark:border-zinc-600">
 				<div className="flex items-center gap-2">
-					<Code2Icon size={25} className="animate-bounce" />
+					<img src="/codeIcon.avifs" alt="code icon" width={25} height={25} />
 					<span className="font-semibold text-xl capitalize">
 						{translations?.["top-langs-title"] ||
 							"Most used languages"}
