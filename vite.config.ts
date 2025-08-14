@@ -38,9 +38,9 @@ export default defineConfig({
 		rollupOptions: {
 			output: {
 				manualChunks(id) {
-					// Group all other node_modules into a general 'vendor' chunk
+					// Split node_modules into chunck
 					if (id.includes("node_modules")) {
-						return "vendor";
+						return id.split("node_modules/")[1].split("/")[0];
 					}
 				},
 			},
