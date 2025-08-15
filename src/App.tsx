@@ -1,6 +1,6 @@
 import { Navigate, Outlet, Route, Routes, useParams } from "react-router-dom";
 import { useData } from "./contexts/DataContext";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import Background from "./components/Background";
 import Header from "./components/Header";
@@ -53,16 +53,29 @@ function InitialRedirector() {
 function LanguageLayout() {
 	const { lang } = useParams();
 	const { supportedLangs, loadContentForLang, isLoading } = useData();
+	const isLangSupported = useMemo(() => {
+		if (supportedLangs.length === 0) return null;
+		return supportedLangs.some((l) => l.code === lang);
+	}, [lang, supportedLangs]);
 
 	useEffect(() => {
-		if (lang && supportedLangs.some((l) => l.code === lang)) {
+		if (lang && isLangSupported) {
 			loadContentForLang(lang);
 		}
 	}, [lang, supportedLangs]);
 
-	if (isLoading) return <LoadingScreen />;
+	// show error page
+	if (isLangSupported === false) {
+		return (
+			<ErrorPage
+				error={new Error("Unsupported language")}
+				errorCode="404"
+			/>
+		);
+	}
 
-	// if (!supportedLangs.some((l) => l.code === lang)) return <Navigate to="/" replace />;
+	// show loading screen
+	if (isLoading) return <LoadingScreen />;
 
 	return (
 		<div className="relative min-h-screen text-black dark:text-white">
