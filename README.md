@@ -21,6 +21,8 @@ This tutorial will guide you how to setup this project for your own using github
 
 4. You can change the static files in public folder such as favicon, banner_profile, profile_picture, loading_animation, etc.
 
+5. Enable the github actions workflow since github by default disable it on forked repository. <img src="https://raw.githubusercontent.com/kiuyha/kiuyha.github.io/refs/heads/main/docs/EnableWorkflow.png">
+
 5. Now just commit your changes, and the github action will handle the CI/CD pipeline.
 
 6. Remember to change the source of github pages to `github actions`. <img src="https://raw.githubusercontent.com/kiuyha/kiuyha.github.io/refs/heads/main/docs/ChangeSourcePages.png">
